@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json({ limit: '10mb' }));
 
@@ -21,6 +21,23 @@ const ai = new GoogleGenAI({
   }
 });
 
+// Helper to detect common prompt injection patterns
+function detectPromptInjection(text: string): boolean {
+  const lowercase = text.toLowerCase();
+  const injectionPatterns = [
+    "ignore previous instructions",
+    "ignore all previous",
+    "system override",
+    "developer mode",
+    "you are now a",
+    "new instruction",
+    "bypass restrictions",
+    "do not mention",
+    "jailbreak"
+  ];
+  return injectionPatterns.some(pattern => lowercase.includes(pattern));
+}
+
 // AI Coach endpoint
 app.post("/api/chat", async (req, res) => {
   try {
@@ -30,6 +47,21 @@ app.post("/api/chat", async (req, res) => {
     }
     if (!assessment) {
       return res.status(400).json({ error: "Missing assessment data parameter" });
+    }
+    
+    const lastMessage = messages[messages.length - 1]?.content;
+    if (!lastMessage || typeof lastMessage !== 'string') {
+      return res.status(400).json({ error: "Invalid user message" });
+    }
+
+    // 1. DOS Protection: Enforce maximum text length limit
+    if (lastMessage.length > 2000) {
+      return res.status(400).json({ error: "Message exceeds maximum length of 2000 characters" });
+    }
+
+    // 2. Prompt Injection Defense: Detect hijacking patterns
+    if (detectPromptInjection(lastMessage)) {
+      return res.status(400).json({ error: "Security validation failed: Prohibited instruction pattern detected." });
     }
     
     const systemInstruction = `You are CarbonBuddy AI, a friendly and knowledgeable sustainability coach. 
@@ -51,11 +83,6 @@ app.post("/api/chat", async (req, res) => {
       parts: [{ text: m.content }]
     }));
     
-    // Note: The SDK chat.sendMessage typically handles history internally if you use the same chat object,
-    // but for stateless API calls we might need to send the full context or use generateContent.
-    // However, ai.chats.create can take history.
-    
-    const lastMessage = messages[messages.length - 1].content;
     const response = await chat.sendMessage({ message: lastMessage });
 
     res.json({ text: response.text });
