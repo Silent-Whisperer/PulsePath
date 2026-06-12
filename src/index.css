@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap');
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+}
+
+body {
+  @apply font-sans bg-slate-50 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+}
+
+/* Default Cursor */
+.cursor-leaf, .cursor-leaf * {
+  cursor: default;
+}
+
+/* Tree Cursor specifically for Diagnostic/Results */
+.cursor-tree-all, .cursor-tree-all * {
+  cursor: default;
+}
+
+.cursor-tree-hover, .cursor-tree-hover * {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='24'>🌲</text></svg>") 16 24, pointer !important;
+}
+
+/* Custom Slider Styling (The "Draggers") */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  @apply bg-slate-200 h-3 rounded-full dark:bg-slate-800;
+  border: 1px solid #e2e8f0;
+}
+
+.dark input[type="range"]::-webkit-slider-runnable-track {
+  border: 1px solid #334155;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  @apply bg-white h-7 w-7 rounded-full border-2 border-emerald-500 shadow-lg cursor-grab active:cursor-grabbing dark:bg-slate-900;
+  margin-top: -9px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.1);
+  @apply border-emerald-400;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(0.95);
+  @apply bg-emerald-50 dark:bg-slate-800;
+}
+
+/* Firefox support */
+input[type="range"]::-moz-range-track {
+  @apply bg-slate-200 h-3 rounded-full dark:bg-slate-800;
+}
+input[type="range"]::-moz-range-thumb {
+  @apply bg-white h-7 w-7 rounded-full border-2 border-emerald-500 shadow-lg cursor-grab dark:bg-slate-900;
+}
+
+/* Inactivity CO2 Cursor */
+.cursor-inactive, .cursor-inactive * {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' style='font-size:40px'><text y='40'>🌫️</text></svg>") 24 40, auto !important;
+}
+
+h1, h2, h3, .font-display {
+  @apply font-display;
+}
+

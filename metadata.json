@@ -1,0 +1,6 @@
+{
+  "name": "CarbonBuddy AI",
+  "description": "A personalized carbon footprint tracker and AI sustainability coach to help you understand and reduce your environmental impact.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
