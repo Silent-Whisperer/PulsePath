@@ -141,7 +141,7 @@ export default function AssessmentForm({ onComplete, units }: Props) {
                 <div className="space-y-6 md:space-y-8">
                   <div>
                     <div className="flex flex-col sm:flex-row justify-between mb-4 gap-2">
-                      <label className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                      <label htmlFor="mileage-input" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
                         <Zap size={14} className="text-amber-500" /> {units === 'imperial' ? 'Annual Mileage' : 'Annual Kilometers'}
                       </label>
                       <span className="text-xl md:text-2xl font-bold text-emerald-500 font-display">
@@ -149,6 +149,7 @@ export default function AssessmentForm({ onComplete, units }: Props) {
                       </span>
                     </div>
                     <input 
+                      id="mileage-input"
                       type="range" 
                       min="0" 
                       max={units === 'imperial' ? 30000 : 50000} 
@@ -183,9 +184,10 @@ export default function AssessmentForm({ onComplete, units }: Props) {
               {currentStep.id === 'travel' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                   <div className="p-6 md:p-8 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl md:rounded-[2rem]">
-                    <label className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest mb-4 md:mb-6 block">Short-Haul Trips</label>
+                    <label htmlFor="short-flights-input" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest mb-4 md:mb-6 block">Short-Haul Trips</label>
                     <div className="flex items-center gap-6">
                       <input 
+                        id="short-flights-input"
                         type="range" min="0" max="20" step="1" 
                         value={data.travel.shortFlights}
                         onChange={(e) => setData({ ...data, travel: { ...data.travel, shortFlights: Number(e.target.value) } })}
@@ -196,9 +198,10 @@ export default function AssessmentForm({ onComplete, units }: Props) {
                     <p className="text-[10px] md:text-xs text-slate-400 mt-3 md:mt-4 italic">Round trips &lt; 3 hours</p>
                   </div>
                   <div className="p-6 md:p-8 bg-indigo-900 dark:bg-indigo-950 rounded-3xl md:rounded-[2rem] text-white border dark:border-indigo-900/50">
-                    <label className="text-sm font-bold text-indigo-300 uppercase tracking-widest mb-4 md:mb-6 block">Long-Haul Trips</label>
+                    <label htmlFor="long-flights-input" className="text-sm font-bold text-indigo-300 uppercase tracking-widest mb-4 md:mb-6 block">Long-Haul Trips</label>
                     <div className="flex items-center gap-6">
                       <input 
+                        id="long-flights-input"
                         type="range" min="0" max="10" step="1" 
                         value={data.travel.longFlights}
                         onChange={(e) => setData({ ...data, travel: { ...data.travel, longFlights: Number(e.target.value) } })}
@@ -215,8 +218,9 @@ export default function AssessmentForm({ onComplete, units }: Props) {
                 <div className="space-y-8 md:space-y-10">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="md:col-span-1 p-5 md:p-6 bg-slate-50 dark:bg-slate-900 border dark:border-slate-800 rounded-2xl md:rounded-3xl">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase mb-3 md:mb-4 block">Grid Dependency</label>
+                      <label htmlFor="grid-dependency-input" className="text-[10px] font-bold text-slate-400 uppercase mb-3 md:mb-4 block">Grid Dependency</label>
                       <input 
+                        id="grid-dependency-input"
                         type="number"
                         value={data.energy.electricityMonthly}
                         onChange={(e) => setData({ ...data, energy: { ...data.energy, electricityMonthly: Number(e.target.value) } })}
@@ -246,10 +250,11 @@ export default function AssessmentForm({ onComplete, units }: Props) {
                   </div>
                   <div>
                     <div className="flex justify-between mb-4">
-                      <label className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">Renewable Power Mix</label>
+                      <label htmlFor="renewable-energy-input" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">Renewable Power Mix</label>
                       <span className="text-base md:text-lg font-bold text-amber-600">{data.energy.renewableEnergy}% Green</span>
                     </div>
                     <input 
+                       id="renewable-energy-input"
                        type="range" min="0" max="100" step="5"
                        value={data.energy.renewableEnergy}
                        onChange={(e) => setData({ ...data, energy: { ...data.energy, renewableEnergy: Number(e.target.value) } })}
@@ -283,10 +288,11 @@ export default function AssessmentForm({ onComplete, units }: Props) {
                   </div>
                   <div className="p-6 md:p-8 bg-slate-50 dark:bg-slate-900 border dark:border-slate-800 rounded-2xl md:rounded-[2rem]">
                     <div className="flex justify-between mb-4">
-                      <label className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">Local Sourcing Ratio</label>
+                      <label htmlFor="local-sourcing-input" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">Local Sourcing Ratio</label>
                       <span className="text-base md:text-lg font-bold text-emerald-600">{data.food.localSourcing}%</span>
                     </div>
                     <input 
+                      id="local-sourcing-input"
                       type="range" min="0" max="100"
                       value={data.food.localSourcing}
                       onChange={(e) => setData({ ...data, food: { ...data.food, localSourcing: Number(e.target.value) } })}

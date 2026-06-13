@@ -74,12 +74,12 @@ export default function App() {
     };
   }, []);
 
-  const startAssessment = () => {
+  const startAssessment = React.useCallback(() => {
     setView('assessment');
     window.scrollTo(0, 0);
-  };
+  }, []);
 
-  const handleAssessmentComplete = (data: AssessmentData) => {
+  const handleAssessmentComplete = React.useCallback((data: AssessmentData) => {
     setIsLoading(true);
     window.scrollTo(0, 0);
 
@@ -91,15 +91,15 @@ export default function App() {
       setIsLoading(false);
       setView('results');
     }, 2500);
-  };
+  }, [units]);
 
-  const reset = () => {
+  const reset = React.useCallback(() => {
     setView('landing');
     setResults(null);
     setAssessment(null);
     setShowCoach(false);
     window.scrollTo(0, 0);
-  };
+  }, []);
 
   return (
     <div className={cn(
@@ -137,12 +137,12 @@ export default function App() {
           : "bg-white/70 border-slate-100/50 dark:bg-slate-950/70 dark:border-slate-900"
       )}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2 md:gap-3 cursor-tree-hover group" onClick={reset}>
+          <button className="flex items-center gap-2 md:gap-3 cursor-tree-hover group border-none bg-transparent p-0 text-left outline-none cursor-pointer" onClick={reset} aria-label="CarbonBuddy AI logo, reset to home page">
             <div className="p-1.5 md:p-2 bg-emerald-500 rounded-lg md:rounded-xl shadow-lg shadow-emerald-500/20 shrink-0 group-hover:scale-110 transition-transform">
               <Leaf className="text-white" size={20} />
             </div>
             <span className="font-display font-bold text-xl md:text-2xl tracking-tight truncate text-slate-900 dark:text-white">CarbonBuddy <span className="text-emerald-500">AI</span></span>
-          </div>
+          </button>
           <div className="hidden md:flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em]">
             <button 
               onClick={() => setActiveModal('methodology')} 
@@ -430,12 +430,12 @@ export default function App() {
         view === 'landing' ? "bg-white dark:bg-slate-950 border-slate-100 dark:border-slate-900" : "bg-white dark:bg-slate-950 border-slate-100 dark:border-slate-900"
       )}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-slate-500 dark:text-slate-400 text-sm font-medium">
-          <div className="flex items-center gap-3 cursor-tree-hover" onClick={reset}>
+          <button className="flex items-center gap-3 cursor-tree-hover border-none bg-transparent p-0 text-left outline-none cursor-pointer" onClick={reset} aria-label="CarbonBuddy AI logo, reset to home page">
             <div className="p-1.5 bg-emerald-500 rounded-lg">
               <Leaf size={16} className="text-white" />
             </div>
-            <span className="font-display font-bold tracking-tight text-lg cursor-pointer text-slate-900 dark:text-white">CarbonBuddy AI</span>
-          </div>
+            <span className="font-display font-bold tracking-tight text-lg text-slate-900 dark:text-white">CarbonBuddy AI</span>
+          </button>
           <p className="text-center md:text-left">© 2026 ClimateOS. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-8 md:gap-12 uppercase tracking-widest text-[10px]">
             <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">Security</a>

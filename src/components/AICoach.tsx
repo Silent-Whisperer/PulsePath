@@ -88,7 +88,7 @@ export default function AICoach({ assessment, onClose }: Props) {
           </div>
         </div>
         {onClose && (
-          <button onClick={onClose} className="p-2 md:p-3 hover:bg-white/10 rounded-xl transition-all relative z-10">
+          <button onClick={onClose} className="p-2 md:p-3 hover:bg-white/10 rounded-xl transition-all relative z-10" aria-label="Close Lilo AI Coach">
             <X size={18} className="md:w-5 md:h-5" />
           </button>
         )}
@@ -147,11 +147,13 @@ export default function AICoach({ assessment, onClose }: Props) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Lower my emissions..."
+            aria-label="Type your message to Lilo AI Coach"
             className="flex-1 bg-slate-50 dark:bg-slate-950 border-none rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-xs md:text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-slate-950 dark:focus:ring-slate-100 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
           />
           <button 
             onClick={() => handleSend()}
             disabled={isLoading || !input.trim()}
+            aria-label="Send message to Lilo AI Coach"
             className="w-12 h-12 md:w-14 md:h-14 bg-slate-950 dark:bg-slate-100 text-emerald-400 dark:text-slate-900 rounded-xl md:rounded-2xl flex items-center justify-center hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 transition-all shadow-xl active:scale-95 shrink-0"
           >
             <Send size={20} className="md:w-6 md:h-6" />

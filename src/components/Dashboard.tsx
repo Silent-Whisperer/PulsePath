@@ -73,31 +73,36 @@ const renderActiveShape = (props: any) => {
 
 export default function Dashboard({ results, units }: Props) {
   const [activeIndex, setActiveIndex] = React.useState(0);
-  const [activeActions, setActiveActions] = React.useState<string[]>(results.topActions.map(a => a.id));
+  const [activeActions, setActiveActions] = React.useState<string[]>(() => results.topActions.map(a => a.id));
   const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#64748b'];
   const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
 
-  const convertValue = (val: number) => {
+  const convertValue = React.useCallback((val: number) => {
     return units === 'imperial' ? val * 2.20462 : val;
-  };
+  }, [units]);
+
   const unitLabel = units === 'imperial' ? 'lbs' : 'kg';
 
-  const totalRecSavings = results.topActions
-    .filter(a => activeActions.includes(a.id))
-    .reduce((acc, curr) => acc + curr.co2Saved, 0);
+  const totalRecSavings = React.useMemo(() => {
+    return results.topActions
+      .filter(a => activeActions.includes(a.id))
+      .reduce((acc, curr) => acc + curr.co2Saved, 0);
+  }, [results.topActions, activeActions]);
 
-  const onPieEnter = (_: any, index: number) => {
+  const onPieEnter = React.useCallback((_: any, index: number) => {
     setActiveIndex(index);
-  };
+  }, []);
   
   // Potential Path Data
-  const projectionData = [
-    { name: 'Today', emissions: Math.round(convertValue(results.totalEmissions)) },
-    { name: '+3mo', emissions: Math.round(convertValue(results.totalEmissions - (totalRecSavings * 0.25))) },
-    { name: '+6mo', emissions: Math.round(convertValue(results.totalEmissions - (totalRecSavings * 0.5))) },
-    { name: '+9mo', emissions: Math.round(convertValue(results.totalEmissions - (totalRecSavings * 0.75))) },
-    { name: 'Target', emissions: Math.round(convertValue(results.totalEmissions - totalRecSavings)) },
-  ];
+  const projectionData = React.useMemo(() => {
+    return [
+      { name: 'Today', emissions: Math.round(convertValue(results.totalEmissions)) },
+      { name: '+3mo', emissions: Math.round(convertValue(results.totalEmissions - (totalRecSavings * 0.25))) },
+      { name: '+6mo', emissions: Math.round(convertValue(results.totalEmissions - (totalRecSavings * 0.5))) },
+      { name: '+9mo', emissions: Math.round(convertValue(results.totalEmissions - (totalRecSavings * 0.75))) },
+      { name: 'Target', emissions: Math.round(convertValue(results.totalEmissions - totalRecSavings)) },
+    ];
+  }, [results.totalEmissions, totalRecSavings, convertValue]);
 
   return (
     <div className="space-y-6 md:space-y-10 pb-12">

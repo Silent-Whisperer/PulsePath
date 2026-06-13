@@ -16,5 +16,17 @@ export default defineConfig(() => {
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom'],
+            'recharts': ['recharts'],
+            'motion': ['motion'],
+            'icons': ['lucide-react']
+          }
+        }
+      }
+    }
   };
 });

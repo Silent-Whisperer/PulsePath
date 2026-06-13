@@ -71,8 +71,8 @@ export default function DocumentScanner({ onDataExtracted }: Props) {
         </div>
       </div>
 
-      <label className="relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-950/50 transition-all focus-within:ring-2 focus-within:ring-emerald-500 outline-none">
-        <input type="file" className="sr-only" accept="image/*" onChange={handleFileUpload} disabled={isUploading} />
+      <label htmlFor="receipt-upload-input" className="relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-950/50 transition-all focus-within:ring-2 focus-within:ring-emerald-500 outline-none">
+        <input id="receipt-upload-input" type="file" className="sr-only" accept="image/*" onChange={handleFileUpload} disabled={isUploading} aria-label="Upload utility bill or fuel receipt" />
         
         <AnimatePresence mode="wait">
           {isUploading ? (
