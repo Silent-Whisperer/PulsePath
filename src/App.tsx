@@ -6,13 +6,58 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Leaf, Sparkles, RefreshCcw, Github, MessageSquare, X, Zap, ArrowRight, ShieldCheck, TrendingDown, Sun, Moon } from 'lucide-react';
-import AssessmentForm from './components/AssessmentForm';
-import Dashboard from './components/Dashboard';
-import AICoach from './components/AICoach';
-import DocumentScanner from './components/DocumentScanner';
+const AssessmentForm = React.lazy(() => import('./components/AssessmentForm'));
+const Dashboard = React.lazy(() => import('./components/Dashboard'));
+const AICoach = React.lazy(() => import('./components/AICoach'));
+const DocumentScanner = React.lazy(() => import('./components/DocumentScanner'));
 import { AssessmentData, CarbonResults } from './types';
 import { calculateFootprint } from './utils/calculations';
 import { cn } from './lib/utils';
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  public props: ErrorBoundaryProps;
+  public state: ErrorBoundaryState = {
+    hasError: false
+  };
+
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.props = props;
+  }
+
+  public static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-slate-900 text-white font-sans">
+          <Leaf className="text-emerald-500 mb-4 animate-bounce" size={48} />
+          <h2 className="text-3xl font-bold font-display mb-2">Something went wrong.</h2>
+          <p className="text-slate-400 mb-6">Our sustainability engine encountered a display issue.</p>
+          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all cursor-pointer">
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 
 export default function App() {
   const [view, setView] = useState<'landing' | 'assessment' | 'results'>('landing');
@@ -74,6 +119,17 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveModal(null);
+        setShowCoach(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const startAssessment = React.useCallback(() => {
     setView('assessment');
     window.scrollTo(0, 0);
@@ -102,9 +158,10 @@ export default function App() {
   }, []);
 
   return (
-    <div className={cn(
-      "min-h-screen flex flex-col font-sans transition-colors duration-300 selection:bg-emerald-200 dark:selection:bg-emerald-800/50 selection:text-emerald-900 dark:selection:text-emerald-100",
-      view === 'landing' ? "bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" : "bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100",
+    <ErrorBoundary>
+      <div className={cn(
+        "min-h-screen flex flex-col font-sans transition-colors duration-300 selection:bg-emerald-200 dark:selection:bg-emerald-800/50 selection:text-emerald-900 dark:selection:text-emerald-100",
+        view === 'landing' ? "bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100" : "bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100",
       isInactive ? "cursor-inactive" : ""
     )}>
       {/* Background Decorations */}
@@ -378,23 +435,26 @@ export default function App() {
                 <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white font-display mb-3 md:mb-4">The Impact Diagnostic</h2>
                 <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 italic">"I'll need a few snapshots of your lifestyle to build your custom roadmap."</p>
               </div>
-              <AssessmentForm onComplete={handleAssessmentComplete} units={units} />
+              <React.Suspense fallback={<div className="text-center p-12 text-emerald-500 font-bold font-mono">LOADING DIAGNOSTIC FORM...</div>}>
+                <AssessmentForm onComplete={handleAssessmentComplete} units={units} />
+              </React.Suspense>
             </div>
           )}
 
           {view === 'results' && results && assessment && (
-            <motion.div 
-              key="results"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-4 print:block gap-8 md:gap-12 pb-20"
-            >
-              <div className="xl:col-span-3 print:w-full">
-                <Dashboard results={results} units={units} />
-              </div>
-              
-              <aside className="space-y-8 print:hidden">
-                <DocumentScanner onDataExtracted={(data) => console.log('Extracted:', data)} />
+            <React.Suspense fallback={<div className="text-center p-12 text-emerald-500 font-bold font-mono">LOADING STRATEGIC DASHBOARD...</div>}>
+              <motion.div 
+                key="results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-4 print:block gap-8 md:gap-12 pb-20"
+              >
+                <div className="xl:col-span-3 print:w-full">
+                  <Dashboard results={results} units={units} />
+                </div>
+                
+                <aside className="space-y-8 print:hidden">
+                  <DocumentScanner onDataExtracted={(data) => console.log('Extracted:', data)} />
                 <div className="bg-slate-900 p-8 rounded-[2rem] md:rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group border dark:border-slate-800">
                   <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl" />
                   <div className="flex items-center gap-3 mb-6">
@@ -420,7 +480,8 @@ export default function App() {
                 </div>
               </aside>
             </motion.div>
-          )}
+          </React.Suspense>
+        )}
         </AnimatePresence>
       </main>
 
@@ -457,7 +518,9 @@ export default function App() {
                 className="mb-4 md:mb-6 drop-shadow-2xl fixed inset-4 md:inset-auto md:relative md:bottom-auto md:right-auto md:w-auto"
               >
                 <div className="w-full h-full md:w-[380px] md:h-[480px]">
-                  <AICoach assessment={assessment} onClose={() => setShowCoach(false)} />
+                  <React.Suspense fallback={<div className="bg-white dark:bg-slate-900 p-8 rounded-3xl text-emerald-500 font-bold font-mono">LOADING AI COACH...</div>}>
+                    <AICoach assessment={assessment} onClose={() => setShowCoach(false)} />
+                  </React.Suspense>
                 </div>
               </motion.div>
             )}
@@ -623,6 +686,7 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
