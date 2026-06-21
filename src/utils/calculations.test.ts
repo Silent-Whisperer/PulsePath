@@ -202,4 +202,44 @@ describe('CarbonBuddy AI calculation tests', () => {
     // Waste should be 500 - 150 - 100 = 250
     expect(results.breakdown.find(b => b.category === 'Waste')!.value).toBe(250);
   });
+
+  test('All vehicle types emission factors', () => {
+    const baseData: AssessmentData = {
+      transportation: { mileage: 1000, type: 'gas' },
+      travel: { shortFlights: 0, longFlights: 0 },
+      energy: { electricityMonthly: 0, heatingSource: 'wood', houseSize: 'apartment', renewableEnergy: 100 },
+      food: { diet: 'vegan', localSourcing: 100, foodWaste: 'low' },
+      shopping: { frequency: 'low', clothingFreq: 'low' },
+      waste: { recycling: true, composting: true },
+    };
+
+    const types = ['gas', 'hybrid', 'electric', 'public', 'bike'] as const;
+    const expectedEmissions = [190, 120, 50, 40, 0]; // 1000 * transFactors[type]
+
+    types.forEach((type, index) => {
+      const res = calculateFootprint({ ...baseData, transportation: { mileage: 1000, type } }, 'metric');
+      const val = res.breakdown.find(b => b.category === 'Transportation')!.value;
+      expect(val).toBe(expectedEmissions[index]);
+    });
+  });
+
+  test('All diet types emission factors', () => {
+    const baseData: AssessmentData = {
+      transportation: { mileage: 0, type: 'bike' },
+      travel: { shortFlights: 0, longFlights: 0 },
+      energy: { electricityMonthly: 0, heatingSource: 'wood', houseSize: 'apartment', renewableEnergy: 100 },
+      food: { diet: 'vegan', localSourcing: 0, foodWaste: 'medium' }, // waste multiplier = 1.1, local discount = 1
+      shopping: { frequency: 'low', clothingFreq: 'low' },
+      waste: { recycling: true, composting: true },
+    };
+
+    const diets = ['heavy-meat', 'meat', 'vegetarian', 'vegan'] as const;
+    const baseFactors = [3300, 2500, 1700, 1500];
+
+    diets.forEach((diet, index) => {
+      const res = calculateFootprint({ ...baseData, food: { diet, localSourcing: 0, foodWaste: 'medium' } }, 'metric');
+      const val = res.breakdown.find(b => b.category === 'Food')!.value;
+      expect(val).toBe(Math.round(baseFactors[index] * 1.1));
+    });
+  });
 });

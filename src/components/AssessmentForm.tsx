@@ -104,7 +104,7 @@ export default function AssessmentForm({ onComplete, units }: Props) {
           <div className="mb-12">
             <div className="flex items-center justify-between mb-4">
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Diagnostic Status</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600">Phase {stepIndex + 1} of {STEPS.length}</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400">Phase {stepIndex + 1} of {STEPS.length}</span>
             </div>
             <div className="bg-slate-100 dark:bg-slate-950 h-3 rounded-full overflow-hidden flex gap-1 p-0.5 border border-slate-200/50 dark:border-slate-800 shadow-inner">
               {STEPS.map((_, idx) => (
@@ -144,7 +144,7 @@ export default function AssessmentForm({ onComplete, units }: Props) {
                       <label htmlFor="mileage-input" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
                         <Zap size={14} className="text-amber-500" /> {units === 'imperial' ? 'Annual Mileage' : 'Annual Kilometers'}
                       </label>
-                      <span className="text-xl md:text-2xl font-bold text-emerald-500 font-display">
+                      <span className="text-xl md:text-2xl font-bold text-emerald-700 dark:text-emerald-400 font-display">
                         {data.transportation.mileage.toLocaleString()} {units === 'imperial' ? 'miles' : 'km'}
                       </span>
                     </div>
@@ -289,7 +289,7 @@ export default function AssessmentForm({ onComplete, units }: Props) {
                   <div className="p-6 md:p-8 bg-slate-50 dark:bg-slate-900 border dark:border-slate-800 rounded-2xl md:rounded-[2rem]">
                     <div className="flex justify-between mb-4">
                       <label htmlFor="local-sourcing-input" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest">Local Sourcing Ratio</label>
-                      <span className="text-base md:text-lg font-bold text-emerald-600">{data.food.localSourcing}%</span>
+                      <span className="text-base md:text-lg font-bold text-emerald-700 dark:text-emerald-400">{data.food.localSourcing}%</span>
                     </div>
                     <input 
                       id="local-sourcing-input"
@@ -354,8 +354,9 @@ export default function AssessmentForm({ onComplete, units }: Props) {
                     <button 
                       key={w.key}
                       onClick={() => setData({ ...data, waste: { ...data.waste, [w.key]: !data.waste[w.key as keyof typeof data.waste] } })}
+                      aria-pressed={data.waste[w.key as keyof typeof data.waste]}
                       className={cn(
-                        "p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border-2 text-left transition-all group cursor-tree-hover",
+                        "p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border-2 text-left transition-all group cursor-tree-hover focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none",
                         data.waste[w.key as keyof typeof data.waste]
                           ? "border-teal-500 dark:border-teal-400 bg-teal-50 dark:bg-teal-950/20 text-teal-900 dark:text-teal-400"
                           : "border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-200 dark:hover:border-slate-700"

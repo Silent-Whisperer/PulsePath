@@ -38,7 +38,21 @@ const SECTOR_DETAILS: Record<string, { desc: string; fact: string }> = {
   }
 };
 
-const renderActiveShape = (props: any) => {
+interface ActiveShapeProps {
+  cx: number;
+  cy: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  fill: string;
+  payload: {
+    category: string;
+  };
+  percent: number;
+}
+
+const renderActiveShape = (props: ActiveShapeProps) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent } = props;
 
   return (
@@ -89,7 +103,7 @@ export default function Dashboard({ results, units }: Props) {
       .reduce((acc, curr) => acc + curr.co2Saved, 0);
   }, [results.topActions, activeActions]);
 
-  const onPieEnter = React.useCallback((_: any, index: number) => {
+  const onPieEnter = React.useCallback((_: unknown, index: number) => {
     setActiveIndex(index);
   }, []);
   
@@ -177,7 +191,7 @@ export default function Dashboard({ results, units }: Props) {
             <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-widest mb-6">Where your carbon comes from</p>
           </div>
 
-          <div className="relative w-full aspect-square max-w-[280px] md:max-w-[320px] mb-6">
+          <div className="relative w-full aspect-square max-w-[280px] md:max-w-[320px] mb-6" role="img" aria-label="Carbon footprint impact distribution pie chart">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -238,7 +252,7 @@ export default function Dashboard({ results, units }: Props) {
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-2 font-medium">
               {SECTOR_DETAILS[results.breakdown[activeIndex]?.category || 'Transportation']?.desc}
             </p>
-            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 leading-relaxed font-bold">
+            <p className="text-[10px] text-emerald-700 dark:text-emerald-400 leading-relaxed font-bold">
               💡 {SECTOR_DETAILS[results.breakdown[activeIndex]?.category || 'Transportation']?.fact}
             </p>
           </div>
@@ -250,7 +264,7 @@ export default function Dashboard({ results, units }: Props) {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <div className="w-6 md:w-8 h-[2px] bg-emerald-500" />
-              <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-emerald-600">The High-Impact Directive</span>
+              <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">The High-Impact Directive</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white font-display">Your Top 3 Actions</h2>
             <p className="text-sm md:text-slate-500 dark:text-slate-400 mt-2">These three shifts represent 80% of your available impact.</p>
@@ -298,7 +312,7 @@ export default function Dashboard({ results, units }: Props) {
             </div>
           </div>
 
-          <div className="h-[250px] md:h-[300px] w-full">
+          <div className="h-[250px] md:h-[300px] w-full" role="img" aria-label="12-month carbon reduction projection graph">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={projectionData}>
                 <defs>

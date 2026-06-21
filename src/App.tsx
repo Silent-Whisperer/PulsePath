@@ -10,6 +10,7 @@ const AssessmentForm = React.lazy(() => import('./components/AssessmentForm'));
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
 const AICoach = React.lazy(() => import('./components/AICoach'));
 const DocumentScanner = React.lazy(() => import('./components/DocumentScanner'));
+import type { ScannedReceiptData } from './components/DocumentScanner';
 import { AssessmentData, CarbonResults } from './types';
 import { calculateFootprint } from './utils/calculations';
 import { cn } from './lib/utils';
@@ -78,6 +79,22 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem('units', units);
+    if (assessment) {
+      const updated = { ...assessment };
+      if (units === 'imperial') {
+        updated.transportation = {
+          ...updated.transportation,
+          mileage: Math.round(assessment.transportation.mileage / 1.60934)
+        };
+      } else {
+        updated.transportation = {
+          ...updated.transportation,
+          mileage: Math.round(assessment.transportation.mileage * 1.60934)
+        };
+      }
+      setAssessment(updated);
+      setResults(calculateFootprint(updated, units));
+    }
   }, [units]);
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -149,6 +166,30 @@ export default function App() {
     }, 2500);
   }, [units]);
 
+  const handleDataExtracted = React.useCallback((extractedData: ScannedReceiptData) => {
+    if (!assessment) return;
+    const updated = { ...assessment };
+    if (extractedData.type === 'electricity') {
+      updated.energy = {
+        ...updated.energy,
+        electricityMonthly: Math.round(extractedData.amount)
+      };
+    } else if (extractedData.type === 'fuel') {
+      let kmAdded = 0;
+      if (extractedData.unit?.toLowerCase().includes('gallon')) {
+        kmAdded = units === 'imperial' ? extractedData.amount * 25 : extractedData.amount * 40.2336;
+      } else {
+        kmAdded = units === 'imperial' ? extractedData.amount * 7.456 : extractedData.amount * 12;
+      }
+      updated.transportation = {
+        ...updated.transportation,
+        mileage: Math.round(updated.transportation.mileage + kmAdded)
+      };
+    }
+    setAssessment(updated);
+    setResults(calculateFootprint(updated, units));
+  }, [assessment, units]);
+
   const reset = React.useCallback(() => {
     setView('landing');
     setResults(null);
@@ -194,28 +235,28 @@ export default function App() {
           : "bg-white/70 border-slate-100/50 dark:bg-slate-950/70 dark:border-slate-900"
       )}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-          <button className="flex items-center gap-2 md:gap-3 cursor-tree-hover group border-none bg-transparent p-0 text-left outline-none cursor-pointer" onClick={reset} aria-label="CarbonBuddy AI logo, reset to home page">
+          <button className="flex items-center gap-2 md:gap-3 cursor-tree-hover group border-none bg-transparent p-0 text-left outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none rounded-xl" onClick={reset} aria-label="CarbonBuddy AI logo, reset to home page">
             <div className="p-1.5 md:p-2 bg-emerald-500 rounded-lg md:rounded-xl shadow-lg shadow-emerald-500/20 shrink-0 group-hover:scale-110 transition-transform">
               <Leaf className="text-white" size={20} />
             </div>
-            <span className="font-display font-bold text-xl md:text-2xl tracking-tight truncate text-slate-900 dark:text-white">CarbonBuddy <span className="text-emerald-500">AI</span></span>
+            <span className="font-display font-bold text-xl md:text-2xl tracking-tight truncate text-slate-900 dark:text-white">CarbonBuddy <span className="text-emerald-700 dark:text-emerald-400">AI</span></span>
           </button>
           <div className="hidden md:flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em]">
             <button 
               onClick={() => setActiveModal('methodology')} 
-              className="px-5 py-2 rounded-full border border-emerald-500/30 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white dark:hover:text-slate-950 transition-all bg-emerald-500/5 cursor-tree-hover font-bold text-[10px] uppercase tracking-[0.2em]"
+              className="px-5 py-2 rounded-full border border-emerald-500/30 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white dark:hover:text-slate-950 transition-all bg-emerald-500/5 cursor-tree-hover font-bold text-[10px] uppercase tracking-[0.2em] focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
               Methodology
             </button>
             <button 
               onClick={() => setActiveModal('coach')} 
-              className="px-5 py-2 rounded-full border border-emerald-500/30 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white dark:hover:text-slate-950 transition-all bg-emerald-500/5 cursor-tree-hover font-bold text-[10px] uppercase tracking-[0.2em]"
+              className="px-5 py-2 rounded-full border border-emerald-500/30 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white dark:hover:text-slate-950 transition-all bg-emerald-500/5 cursor-tree-hover font-bold text-[10px] uppercase tracking-[0.2em] focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
               Coach Index
             </button>
             <button 
               onClick={() => setActiveModal('impact')} 
-              className="px-5 py-2 rounded-full border border-emerald-500/30 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white dark:hover:text-slate-950 transition-all bg-emerald-500/5 cursor-tree-hover font-bold text-[10px] uppercase tracking-[0.2em]"
+              className="px-5 py-2 rounded-full border border-emerald-500/30 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white dark:hover:text-slate-950 transition-all bg-emerald-500/5 cursor-tree-hover font-bold text-[10px] uppercase tracking-[0.2em] focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
               Global Impact
             </button>
@@ -223,14 +264,14 @@ export default function App() {
           <div className="flex items-center gap-2 md:gap-4">
             <button 
               onClick={() => setUnits(units === 'metric' ? 'imperial' : 'metric')}
-              className="px-3 py-1.5 rounded-full border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 cursor-tree-hover shadow-sm"
+              className="px-3 py-1.5 rounded-full border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 cursor-tree-hover shadow-sm focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               aria-label="Toggle units"
             >
               {units === 'metric' ? 'Metric (kg)' : 'Imperial (lbs)'}
             </button>
             <button 
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-              className="p-2.5 rounded-full border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 cursor-tree-hover"
+              className="p-2.5 rounded-full border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 cursor-tree-hover focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
               aria-label="Toggle theme"
             >
               {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
@@ -238,7 +279,8 @@ export default function App() {
             {view === 'results' && (
               <button 
                 onClick={reset}
-                className="flex items-center gap-2 text-xs md:text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-600 transition-colors active:scale-95 bg-white dark:bg-slate-900 px-4 py-2 rounded-full border border-slate-100 dark:border-slate-800 shadow-sm cursor-tree-hover"
+                className="flex items-center gap-2 text-xs md:text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors active:scale-95 bg-white dark:bg-slate-900 px-4 py-2 rounded-full border border-slate-100 dark:border-slate-800 shadow-sm cursor-tree-hover focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
+                aria-label="New Diagnostic"
               >
                 <RefreshCcw size={14} /> <span className="hidden sm:inline">New Diagnostic</span>
               </button>
@@ -354,7 +396,7 @@ export default function App() {
 
               <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[7.5rem] font-display font-bold leading-[1.1] md:leading-[0.85] mb-6 md:mb-12 tracking-tighter text-slate-900 dark:text-white">
                 Reimagine Your Impact. <br className="hidden md:block" />
-                Meet Your <span className="text-emerald-500 italic">AI Climate Coach.</span>
+                Meet Your <span className="text-emerald-700 dark:text-emerald-400 italic">AI Climate Coach.</span>
               </h1>
 
               <p className="text-lg md:text-2xl text-slate-500 dark:text-slate-400 max-w-4xl mx-auto mb-10 md:mb-20 leading-relaxed font-medium">
@@ -366,7 +408,7 @@ export default function App() {
                   whileHover={{ scale: 1.02, y: -4 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={startAssessment}
-                  className="w-full sm:w-auto px-10 md:px-16 py-6 md:py-8 bg-emerald-500 text-slate-950 rounded-2xl md:rounded-[2.5rem] text-xl md:text-2xl font-bold shadow-[0_32px_64px_-16px_rgba(16,185,129,0.4)] hover:bg-emerald-400 transition-all flex items-center justify-center gap-4 group active:scale-95 cursor-tree-hover"
+                  className="w-full sm:w-auto px-10 md:px-16 py-6 md:py-8 bg-emerald-500 text-slate-950 rounded-2xl md:rounded-[2.5rem] text-xl md:text-2xl font-bold shadow-[0_32px_64px_-16px_rgba(16,185,129,0.4)] hover:bg-emerald-400 transition-all flex items-center justify-center gap-4 group active:scale-95 cursor-tree-hover focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
                 >
                   Start Diagnostic <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
                 </motion.button>
@@ -375,7 +417,7 @@ export default function App() {
               {/* Bento-style Features Preview */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 text-left w-full px-4 sm:px-0 pb-20">
                 <div className="md:col-span-2 p-8 md:p-12 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl md:rounded-[3rem] shadow-sm hover:shadow-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group ring-1 ring-slate-100 dark:ring-slate-800/50">
-                  <div className="p-3 md:p-4 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl inline-block mb-6 md:mb-8 group-hover:scale-110 transition-transform">
+                  <div className="p-3 md:p-4 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-2xl inline-block mb-6 md:mb-8 group-hover:scale-110 transition-transform">
                     <Sparkles size={24} />
                   </div>
                   <h3 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4 font-display text-slate-900 dark:text-white">Contextual Intelligence</h3>
@@ -435,14 +477,14 @@ export default function App() {
                 <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white font-display mb-3 md:mb-4">The Impact Diagnostic</h2>
                 <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 italic">"I'll need a few snapshots of your lifestyle to build your custom roadmap."</p>
               </div>
-              <React.Suspense fallback={<div className="text-center p-12 text-emerald-500 font-bold font-mono">LOADING DIAGNOSTIC FORM...</div>}>
+              <React.Suspense fallback={<div className="text-center p-12 text-emerald-700 dark:text-emerald-400 font-bold font-mono">LOADING DIAGNOSTIC FORM...</div>}>
                 <AssessmentForm onComplete={handleAssessmentComplete} units={units} />
               </React.Suspense>
             </div>
           )}
 
           {view === 'results' && results && assessment && (
-            <React.Suspense fallback={<div className="text-center p-12 text-emerald-500 font-bold font-mono">LOADING STRATEGIC DASHBOARD...</div>}>
+            <React.Suspense fallback={<div className="text-center p-12 text-emerald-700 dark:text-emerald-400 font-bold font-mono">LOADING STRATEGIC DASHBOARD...</div>}>
               <motion.div 
                 key="results"
                 initial={{ opacity: 0 }}
@@ -454,7 +496,7 @@ export default function App() {
                 </div>
                 
                 <aside className="space-y-8 print:hidden">
-                  <DocumentScanner onDataExtracted={(data) => console.log('Extracted:', data)} />
+                  <DocumentScanner onDataExtracted={handleDataExtracted} />
                 <div className="bg-slate-900 p-8 rounded-[2rem] md:rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group border dark:border-slate-800">
                   <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl" />
                   <div className="flex items-center gap-3 mb-6">
@@ -467,7 +509,7 @@ export default function App() {
                   <p className="text-sm text-slate-400 leading-relaxed mb-8">
                     Once you've mastered your priority actions, I recommend exploring your <span className="text-white font-bold">{results.secondaryActions[0]?.category}</span> impact.
                   </p>
-                  <button className="w-full py-4 bg-emerald-500 text-slate-950 rounded-2xl font-bold text-sm shadow-lg hover:bg-emerald-400 transition-all active:scale-95 cursor-tree-hover">
+                  <button className="w-full py-4 bg-emerald-500 text-slate-950 rounded-2xl font-bold text-sm shadow-lg hover:bg-emerald-400 transition-all active:scale-95 cursor-tree-hover focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none">
                     View Secondaries
                   </button>
                 </div>
@@ -491,7 +533,7 @@ export default function App() {
         view === 'landing' ? "bg-white dark:bg-slate-950 border-slate-100 dark:border-slate-900" : "bg-white dark:bg-slate-950 border-slate-100 dark:border-slate-900"
       )}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-slate-500 dark:text-slate-400 text-sm font-medium">
-          <button className="flex items-center gap-3 cursor-tree-hover border-none bg-transparent p-0 text-left outline-none cursor-pointer" onClick={reset} aria-label="CarbonBuddy AI logo, reset to home page">
+          <button className="flex items-center gap-3 cursor-tree-hover border-none bg-transparent p-0 text-left outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none rounded-xl" onClick={reset} aria-label="CarbonBuddy AI logo, reset to home page">
             <div className="p-1.5 bg-emerald-500 rounded-lg">
               <Leaf size={16} className="text-white" />
             </div>
@@ -518,7 +560,7 @@ export default function App() {
                 className="mb-4 md:mb-6 drop-shadow-2xl fixed inset-4 md:inset-auto md:relative md:bottom-auto md:right-auto md:w-auto"
               >
                 <div className="w-full h-full md:w-[380px] md:h-[480px]">
-                  <React.Suspense fallback={<div className="bg-white dark:bg-slate-900 p-8 rounded-3xl text-emerald-500 font-bold font-mono">LOADING AI COACH...</div>}>
+                  <React.Suspense fallback={<div className="bg-white dark:bg-slate-900 p-8 rounded-3xl text-emerald-700 dark:text-emerald-400 font-bold font-mono">LOADING AI COACH...</div>}>
                     <AICoach assessment={assessment} onClose={() => setShowCoach(false)} />
                   </React.Suspense>
                 </div>
@@ -528,7 +570,7 @@ export default function App() {
           <button 
             onClick={() => setShowCoach(!showCoach)}
             className={cn(
-              "w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all active:scale-90 shadow-[0_20px_50px_rgba(16,185,129,0.3)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] cursor-tree-hover shrink-0 border border-emerald-400/20",
+              "w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all active:scale-90 shadow-[0_20px_50px_rgba(16,185,129,0.3)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] cursor-tree-hover shrink-0 border border-emerald-400/20 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none",
               showCoach ? "bg-white text-slate-900 hover:bg-slate-100" : "bg-emerald-500 text-white hover:bg-emerald-400"
             )}
           >

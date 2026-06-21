@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
+import { AssessmentData, Message } from "./src/types";
 
 dotenv.config();
 
@@ -21,7 +22,9 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        scriptSrc: process.env.NODE_ENV === "production"
+          ? ["'self'", "'unsafe-inline'"]
+          : ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:", "blob:"],
@@ -55,7 +58,7 @@ const rawJsonParser = express.json({ limit: '10mb' }); // parser for receipt sca
 const tightJsonParser = express.json({ limit: '10kb' }); // general tight body parser
 
 // Helper to detect common prompt injection patterns
-function detectPromptInjection(text: string): boolean {
+export function detectPromptInjection(text: string): boolean {
   const lowercase = text.toLowerCase();
   const injectionPatterns = [
     "ignore previous instructions",
@@ -72,10 +75,11 @@ function detectPromptInjection(text: string): boolean {
 }
 
 // Helper to validate structured Assessment Data
-function validateAssessment(data: any): boolean {
+export function validateAssessment(data: unknown): boolean {
   if (!data || typeof data !== 'object') return false;
   
-  const { transportation, travel, energy, food, shopping, waste } = data;
+  const d = data as Record<string, any>;
+  const { transportation, travel, energy, food, shopping, waste } = d;
   
   if (!transportation || typeof transportation.mileage !== 'number' || !['gas', 'electric', 'hybrid', 'public', 'bike'].includes(transportation.type)) return false;
   if (!travel || typeof travel.shortFlights !== 'number' || typeof travel.longFlights !== 'number') return false;
@@ -101,10 +105,13 @@ const ai = new GoogleGenAI({
 app.post("/api/analyze-receipt", apiLimiter, rawJsonParser, async (req, res) => {
   try {
     const { image } = req.body;
-    if (!image || typeof image !== 'string' || !image.includes(',')) {
-      return res.status(400).json({ error: "Missing or invalid base64 image data parameter" });
+    const match = image.match(/^data:([^;]+);base64,/);
+    const mimeType = match ? match[1] : "image/jpeg";
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+    if (!allowedMimeTypes.includes(mimeType)) {
+      return res.status(400).json({ error: "Unsupported image format. Please upload JPG, PNG, or WEBP." });
     }
-    
+
     const prompt = `Extract carbon-relevant data from this electricity bill or fuel receipt. 
     Return a JSON object with:
     - type: "electricity" or "fuel"
@@ -117,7 +124,7 @@ app.post("/api/analyze-receipt", apiLimiter, rawJsonParser, async (req, res) => 
 
     const imagePart = {
       inlineData: {
-        mimeType: "image/jpeg",
+        mimeType: mimeType,
         data: image.split(',')[1],
       },
     };
@@ -131,18 +138,28 @@ app.post("/api/analyze-receipt", apiLimiter, rawJsonParser, async (req, res) => 
     });
 
     res.json(JSON.parse(response.text || "{}"));
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Analysis error:", error);
-    res.status(500).json({ error: error.message });
+    const errMessage = error instanceof Error ? error.message : String(error);
+    const isProduction = process.env.NODE_ENV === "production";
+    res.status(500).json({ error: isProduction ? "An error occurred while analyzing the document." : errMessage });
   }
 });
 
 // AI Coach endpoint (Restricted payload size of 10KB)
 app.post("/api/chat", apiLimiter, tightJsonParser, async (req, res) => {
   try {
-    const { messages, assessment } = req.body;
+    const { messages, assessment } = req.body as { messages: Message[], assessment: AssessmentData };
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: "Missing or invalid messages parameter" });
+    }
+    const isValidMessages = messages.every(m => 
+      m && typeof m === 'object' && 
+      (m.role === 'user' || m.role === 'assistant' || m.role === 'model') && 
+      typeof m.content === 'string'
+    );
+    if (!isValidMessages) {
+      return res.status(400).json({ error: "Invalid message format inside history" });
     }
     if (!assessment || !validateAssessment(assessment)) {
       return res.status(400).json({ error: "Missing or invalid assessment data parameter" });
@@ -177,7 +194,7 @@ app.post("/api/chat", apiLimiter, tightJsonParser, async (req, res) => {
     });
 
     // Send the history except the last one which is the new prompt
-    const history = messages.slice(0, -1).map((m: any) => ({
+    const history = messages.slice(0, -1).map((m: Message) => ({
       role: m.role === 'user' ? 'user' : 'model',
       parts: [{ text: m.content }]
     }));
@@ -185,14 +202,16 @@ app.post("/api/chat", apiLimiter, tightJsonParser, async (req, res) => {
     const response = await chat.sendMessage({ message: lastMessage });
 
     res.json({ text: response.text });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Chat error:", error);
-    res.status(500).json({ error: error.message });
+    const errMessage = error instanceof Error ? error.message : String(error);
+    const isProduction = process.env.NODE_ENV === "production";
+    res.status(500).json({ error: isProduction ? "An error occurred during the AI chat session." : errMessage });
   }
 });
 
 // Secure Error Handling Middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error & { status?: number }, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error("Unhandled server error:", err);
   const isProduction = process.env.NODE_ENV === "production";
   res.status(err.status || 500).json({

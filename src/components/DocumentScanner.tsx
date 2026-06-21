@@ -3,8 +3,16 @@ import { FileUp, FileText, Loader2, CheckCircle2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 
+export interface ScannedReceiptData {
+  type: 'electricity' | 'fuel';
+  amount: number;
+  unit: string;
+  total_cost?: number;
+  emissions_estimate?: number;
+}
+
 interface Props {
-  onDataExtracted: (data: any) => void;
+  onDataExtracted: (data: ScannedReceiptData) => void;
 }
 
 export default function DocumentScanner({ onDataExtracted }: Props) {
@@ -39,7 +47,7 @@ export default function DocumentScanner({ onDataExtracted }: Props) {
         await new Promise(resolve => setTimeout(resolve, 2000)); // Additional mock processing time
         
         const isFuel = file.name.toLowerCase().includes('fuel') || file.name.toLowerCase().includes('gas') || file.name.toLowerCase().includes('receipt');
-        const mockData = {
+        const mockData: ScannedReceiptData = {
           type: isFuel ? 'fuel' : 'electricity',
           amount: isFuel ? 45 : 320,
           unit: isFuel ? 'Liters' : 'kWh',
