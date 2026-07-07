@@ -1,6 +1,6 @@
 {
-  "name": "CarbonBuddy AI",
-  "description": "A personalized carbon footprint tracker and AI sustainability coach to help you understand and reduce your environmental impact.",
-  "requestFramePermissions": [],
+  "name": "PULSEPATH",
+  "description": "FIFA World Cup 2026 Stadium Intelligence Network for fans, volunteers, and operations.",
+  "requestFramePermissions": ["geolocation"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

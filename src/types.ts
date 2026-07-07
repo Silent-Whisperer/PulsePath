@@ -1,66 +1,100 @@
-export type Category = 'transportation' | 'energy' | 'food' | 'shopping' | 'waste' | 'travel';
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-export interface AssessmentData {
-  transportation: {
-    mileage: number; // annual km
-    type: 'gas' | 'electric' | 'hybrid' | 'public' | 'bike';
-  };
-  energy: {
-    electricityMonthly: number; // kWh
-    heatingSource: 'gas' | 'electric' | 'oil' | 'wood';
-    houseSize: 'apartment' | 'small' | 'medium' | 'large';
-    renewableEnergy: number; // 0-100%
-  };
-  food: {
-    diet: 'heavy-meat' | 'meat' | 'vegetarian' | 'vegan';
-    localSourcing: number; // 0-100
-    foodWaste: 'low' | 'medium' | 'high';
-  };
-  shopping: {
-    frequency: 'low' | 'medium' | 'high';
-    clothingFreq: 'low' | 'medium' | 'high';
-  };
-  waste: {
-    recycling: boolean;
-    composting: boolean;
-  };
-  travel: {
-    shortFlights: number; // flights < 3h
-    longFlights: number; // flights > 3h
-  };
-}
+export type UserRole = 'fan' | 'volunteer' | 'operations' | 'accessibility';
 
-export interface EmissionBreakpoint {
-  category: string;
-  value: number; // kg CO2e
-  percentage: number;
-}
+export type Language = 'en' | 'es' | 'fr' | 'hi' | 'ar';
 
-export interface HighImpactAction {
+export interface StadiumZone {
   id: string;
+  name: string;
+  capacity: number;
+  currentDensity: number; // 0 to 1
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  polygon: [number, number][]; // Lat/Lng coordinates
+}
+
+export interface Gate {
+  id: string;
+  name: string;
+  status: 'open' | 'closed' | 'restricted';
+  throughput: number; // people per minute
+  currentQueueTime: number; // minutes
+  location: [number, number];
+  accessibilityFeatures: string[];
+}
+
+export interface Incident {
+  id: string;
+  type: 'medical' | 'security' | 'crowd' | 'technical' | 'weather' | 'accessibility';
+  severity: 'low' | 'medium' | 'high' | 'critical';
   title: string;
   description: string;
-  impactWeight: number; // 0-100
-  co2Saved: number;
-  category: Category;
-  effort: 'Easy' | 'Moderate' | 'Hard';
-  narrative: string; // AI generated context
+  location: [number, number];
+  zoneId: string;
+  timestamp: string;
+  status: 'new' | 'acknowledged' | 'in-progress' | 'resolved';
+  assignedStaff?: string;
+  aiRecommendation?: string;
 }
 
-export interface CarbonResults {
-  totalEmissions: number;
-  breakdown: EmissionBreakpoint[];
-  topActions: HighImpactAction[];
-  secondaryActions: HighImpactAction[];
-  aiInsight: string;
-  metrics: {
-    treesEquivalent: number;
-    drivingEquivalent: number;
-    homeEnergyEquivalent: number;
+export interface TransitRoute {
+  id: string;
+  type: 'shuttle' | 'metro' | 'bus' | 'train';
+  name: string;
+  status: 'on-time' | 'delayed' | 'suspended';
+  frequency: number; // minutes
+  nextArrival: string;
+  loadFactor: number; // 0 to 1
+  stations: { name: string; location: [number, number] }[];
+}
+
+export interface Vendor {
+  id: string;
+  name: string;
+  type: 'food' | 'merchandise' | 'service';
+  location: [number, number];
+  queueTime: number; // minutes
+  specialties: string[];
+  isSustainable: boolean;
+  isAccessible: boolean;
+}
+
+export interface SimulationState {
+  scenario: string;
+  timeMultiplier: number;
+  isPaused: boolean;
+  weather: {
+    temp: number;
+    condition: 'sunny' | 'rainy' | 'windy' | 'stormy';
+    visibility: number;
   };
+  globalDensity: number;
+  transitReliability: number;
 }
 
 export interface Message {
+  id: string;
   role: 'user' | 'assistant';
   content: string;
+  timestamp: string;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  location: [number, number];
+  status: 'pending' | 'active' | 'completed';
+  type: 'assistance' | 'safety' | 'operations';
+  priority: 'low' | 'medium' | 'high';
+}
+
+export interface SustainabilityStats {
+  bottlesSaved: number;
+  carbonSaved: number; // kg
+  stepsTaken: number;
+  points: number;
 }

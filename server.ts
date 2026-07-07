@@ -1,22 +1,29 @@
-import express from "express";
-import path from "path";
-import { createServer as createViteServer } from "vite";
-import { GoogleGenAI } from "@google/genai";
-import dotenv from "dotenv";
-import helmet from "helmet";
-import compression from "compression";
-import rateLimit from "express-rate-limit";
-import { AssessmentData, Message } from "./src/types";
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import express from 'express';
+import path from 'path';
+import { createServer as createViteServer } from 'vite';
+import { GoogleGenAI } from '@google/genai';
+import dotenv from 'dotenv';
+import helmet from 'helmet';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-// Security and Performance Middleware
-app.disable('x-powered-by');
+// 1. Performance: Apply Gzip compression
 app.use(compression());
 
+// 2. Security: Disable X-Powered-By header
+app.disable('x-powered-by');
+
+// 3. Security: Helmet Hardened Content Security Policy (Leaflet maps & Gemini API compliant)
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -27,203 +34,176 @@ app.use(
           : ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "blob:"],
+        imgSrc: ["'self'", "data:", "blob:", "https://*.tile.openstreetmap.org", "https://*.basemaps.cartocdn.com"],
         connectSrc: ["'self'", "https://generativelanguage.googleapis.com"],
       },
     },
   })
 );
 
-// Global Rate Limiter for protection against DoS
-const limiter = rateLimit({
+// 4. Security: Global Rate Limiter (Protection against general DoS)
+const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 100, // Limit each IP to 100 requests per window
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "Too many requests from this IP, please try again after 15 minutes." }
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes.' }
 });
-app.use(limiter);
+app.use(globalLimiter);
 
-// Specific Rate Limiter for AI endpoints to prevent Gemini API quota abuse
-const apiLimiter = rateLimit({
+// 5. Security: Specific Rate Limiter for AI endpoints to prevent Gemini API quota abuse
+const aiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 10, // limit each IP to 10 requests per minute
+  max: 10, // Limit each IP to 10 requests per minute
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "Too many requests to the AI engine, please wait a minute." }
+  message: { error: 'Too many requests to the AI engine, please wait a minute.' }
 });
 
-// Dedicated parsers for specific payload requirements
-const rawJsonParser = express.json({ limit: '10mb' }); // parser for receipt scanner
-const tightJsonParser = express.json({ limit: '10kb' }); // general tight body parser
+// 6. Security: Enforce tight body parsing boundaries (DOS Mitigation)
+const tightJsonParser = express.json({ limit: '10kb' });
 
-// Helper to detect common prompt injection patterns
+// 7. Security: Prompt Injection Detector Helper
 export function detectPromptInjection(text: string): boolean {
+  if (!text) return false;
   const lowercase = text.toLowerCase();
+  
+  // Normalize text: remove special characters, collapse spacing
+  const normalized = lowercase
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
   const injectionPatterns = [
-    "ignore previous instructions",
-    "ignore all previous",
-    "system override",
-    "developer mode",
-    "you are now a",
-    "new instruction",
-    "bypass restrictions",
-    "do not mention",
-    "jailbreak"
+    'ignore previous instructions',
+    'ignore all previous',
+    'system override',
+    'developer mode',
+    'you are now a',
+    'new instruction',
+    'bypass restrictions',
+    'do not mention',
+    'jailbreak',
+    'pretend to be',
+    'dan mode',
+    'rule override',
+    'forget your instructions',
+    'forget everything'
   ];
-  return injectionPatterns.some(pattern => lowercase.includes(pattern));
+  return injectionPatterns.some(pattern => normalized.includes(pattern) || lowercase.includes(pattern));
 }
 
-// Helper to validate structured Assessment Data
-export function validateAssessment(data: unknown): boolean {
-  if (!data || typeof data !== 'object') return false;
-  
-  const d = data as Record<string, any>;
-  const { transportation, travel, energy, food, shopping, waste } = d;
-  
-  if (!transportation || typeof transportation.mileage !== 'number' || !['gas', 'electric', 'hybrid', 'public', 'bike'].includes(transportation.type)) return false;
-  if (!travel || typeof travel.shortFlights !== 'number' || typeof travel.longFlights !== 'number') return false;
-  if (!energy || typeof energy.electricityMonthly !== 'number' || !['gas', 'electric', 'oil', 'wood'].includes(energy.heatingSource) || !['apartment', 'small', 'medium', 'large'].includes(energy.houseSize) || typeof energy.renewableEnergy !== 'number') return false;
-  if (!food || !['heavy-meat', 'meat', 'vegetarian', 'vegan'].includes(food.diet) || typeof food.localSourcing !== 'number' || !['low', 'medium', 'high'].includes(food.foodWaste)) return false;
-  if (!shopping || !['low', 'medium', 'high'].includes(shopping.frequency) || !['low', 'medium', 'high'].includes(shopping.clothingFreq)) return false;
-  if (!waste || typeof waste.recycling !== 'boolean' || typeof waste.composting !== 'boolean') return false;
-  
-  return true;
-}
+// 8. Initialize Gemini sdk with user agent headers
+const ai = process.env.GEMINI_API_KEY
+  ? new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: { headers: { 'User-Agent': 'pulsepath-ai' } }
+    })
+  : null;
 
-// Initialize Gemini
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'carbonbuddy-ai',
-    }
+// API routes
+app.post('/api/ai', aiLimiter, tightJsonParser, async (req, res) => {
+  const { prompt, role, language, context } = req.body;
+
+  if (!prompt || typeof prompt !== 'string') {
+    return res.status(400).json({ error: 'Missing or invalid prompt parameter' });
   }
-});
 
-// Document extraction endpoint (Accepts base64 image up to 10MB)
-app.post("/api/analyze-receipt", apiLimiter, rawJsonParser, async (req, res) => {
+  // Type validation checks for other inputs
+  if (role && typeof role !== 'string') {
+    return res.status(400).json({ error: 'Invalid role parameter' });
+  }
+  if (language && typeof language !== 'string') {
+    return res.status(400).json({ error: 'Invalid language parameter' });
+  }
+  if (context && typeof context !== 'object') {
+    return res.status(400).json({ error: 'Invalid context parameter' });
+  }
+
+  // DOS mitigation: length limit validation
+  if (prompt.length > 1000) {
+    return res.status(400).json({ error: 'Prompt exceeds maximum length of 1000 characters' });
+  }
+
+  // Prompt injection mitigation
+  if (detectPromptInjection(prompt)) {
+    return res.status(400).json({ error: 'Security validation failed: Prohibited instruction pattern detected.' });
+  }
+
+  if (!ai) {
+    return res.status(503).json({ error: 'AI service unavailable (API Key not configured)' });
+  }
+
   try {
-    const { image } = req.body;
-    const match = image.match(/^data:([^;]+);base64,/);
-    const mimeType = match ? match[1] : "image/jpeg";
-    const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
-    if (!allowedMimeTypes.includes(mimeType)) {
-      return res.status(400).json({ error: "Unsupported image format. Please upload JPG, PNG, or WEBP." });
-    }
+    const systemInstruction = `
+      You are PULSEPATH, an intelligent stadium operations and fan-experience AI for the FIFA World Cup 2026 (Global Football 2026).
+      Current User Role: ${role}
+      Language: ${language}
+      Context: ${JSON.stringify(context)}
+      
+      Guidelines:
+      - Use current simulated venue context.
+      - Never invent emergency instructions.
+      - Escalates medical, safety, and lost-child situations to venue staff.
+      - Give concise, actionable guidance.
+      - Clearly label recommendations as AI-generated if appropriate.
+      - Support multilingual output in the requested language: ${language}.
+      - IMPORTANT: Never use long decimal numbers (e.g., 14.800000000000002). Always round to the nearest whole number for queue times and 1-2 decimal places for density.
+      - Disclaimer: "Demo simulation. Verify critical instructions with venue staff."
+    `;
 
-    const prompt = `Extract carbon-relevant data from this electricity bill or fuel receipt. 
-    Return a JSON object with:
-    - type: "electricity" or "fuel"
-    - amount: numeric value (kWh for electricity, Liters or Gallons for fuel)
-    - unit: the unit of measurement
-    - total_cost: if available
-    - emissions_estimate: a rough estimate in kg CO2 if you can infer it.
-    
-    Format the response as pure JSON.`;
-
-    const imagePart = {
-      inlineData: {
-        mimeType: mimeType,
-        data: image.split(',')[1],
-      },
+    // Helper for retry logic
+    const generateWithRetry = async (retries = 3, delay = 1000) => {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const result = await ai.models.generateContent({
+            model: 'gemini-1.5-flash',
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            config: {
+              systemInstruction: { parts: [{ text: systemInstruction }] },
+              temperature: 0.7,
+            },
+          });
+          return result.text;
+        } catch (error: any) {
+          const isRetryable = error?.status === 'UNAVAILABLE' || error?.message?.includes('503') || error?.message?.includes('high demand');
+          if (isRetryable && i < retries - 1) {
+            console.warn(`Gemini busy, retrying in ${delay}ms... (Attempt ${i + 1}/${retries})`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            delay *= 2; // Exponential backoff
+            continue;
+          }
+          throw error;
+        }
+      }
     };
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: { parts: [imagePart, { text: prompt }] },
-      config: {
-        responseMimeType: "application/json",
-      }
-    });
-
-    res.json(JSON.parse(response.text || "{}"));
-  } catch (error: unknown) {
-    console.error("Analysis error:", error);
-    const errMessage = error instanceof Error ? error.message : String(error);
-    const isProduction = process.env.NODE_ENV === "production";
-    res.status(500).json({ error: isProduction ? "An error occurred while analyzing the document." : errMessage });
+    const text = await generateWithRetry();
+    res.json({ text });
+  } catch (error) {
+    console.error('Gemini error:', error);
+    res.status(500).json({ error: 'Failed to generate response' });
   }
 });
 
-// AI Coach endpoint (Restricted payload size of 10KB)
-app.post("/api/chat", apiLimiter, tightJsonParser, async (req, res) => {
-  try {
-    const { messages, assessment } = req.body as { messages: Message[], assessment: AssessmentData };
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return res.status(400).json({ error: "Missing or invalid messages parameter" });
-    }
-    const isValidMessages = messages.every(m => 
-      m && typeof m === 'object' && 
-      (m.role === 'user' || m.role === 'assistant' || m.role === 'model') && 
-      typeof m.content === 'string'
-    );
-    if (!isValidMessages) {
-      return res.status(400).json({ error: "Invalid message format inside history" });
-    }
-    if (!assessment || !validateAssessment(assessment)) {
-      return res.status(400).json({ error: "Missing or invalid assessment data parameter" });
-    }
-    
-    const lastMessage = messages[messages.length - 1]?.content;
-    if (!lastMessage || typeof lastMessage !== 'string') {
-      return res.status(400).json({ error: "Invalid user message" });
-    }
-
-    // 1. DOS Protection: Enforce maximum text length limit
-    if (lastMessage.length > 2000) {
-      return res.status(400).json({ error: "Message exceeds maximum length of 2000 characters" });
-    }
-
-    // 2. Prompt Injection Defense: Detect hijacking patterns
-    if (detectPromptInjection(lastMessage)) {
-      return res.status(400).json({ error: "Security validation failed: Prohibited instruction pattern detected." });
-    }
-    
-    const systemInstruction = `You are CarbonBuddy AI, a friendly and knowledgeable sustainability coach. 
-    A user has completed their carbon footprint assessment. Here is their data: ${JSON.stringify(assessment)}.
-    Use this context to provide personalized, actionable, and encouraging advice. 
-    Keep responses concise and focused on behavior change.
-    Do not use complex jargon. Convert impact into relatable metrics where possible.`;
-
-    const chat = ai.chats.create({
-      model: "gemini-2.5-flash",
-      config: {
-        systemInstruction,
-      },
-    });
-
-    // Send the history except the last one which is the new prompt
-    const history = messages.slice(0, -1).map((m: Message) => ({
-      role: m.role === 'user' ? 'user' : 'model',
-      parts: [{ text: m.content }]
-    }));
-    
-    const response = await chat.sendMessage({ message: lastMessage });
-
-    res.json({ text: response.text });
-  } catch (error: unknown) {
-    console.error("Chat error:", error);
-    const errMessage = error instanceof Error ? error.message : String(error);
-    const isProduction = process.env.NODE_ENV === "production";
-    res.status(500).json({ error: isProduction ? "An error occurred during the AI chat session." : errMessage });
-  }
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
 // Secure Error Handling Middleware
 app.use((err: Error & { status?: number }, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error("Unhandled server error:", err);
-  const isProduction = process.env.NODE_ENV === "production";
+  console.error('Unhandled server error:', err);
+  const isProduction = process.env.NODE_ENV === 'production';
   res.status(err.status || 500).json({
-    error: isProduction ? "A secure server error occurred." : err.message
+    error: isProduction ? 'A secure server error occurred.' : err.message
   });
 });
 
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: "spa",
+      appType: 'spa',
     });
     app.use(vite.middlewares);
   } else {
@@ -243,8 +223,8 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://localhost:${PORT}`);
   });
 }
 
