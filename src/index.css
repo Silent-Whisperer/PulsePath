@@ -1,22 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Grotesk:wght@400;500;700;900&display=swap');
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
 @theme {
   --color-primary: #ccff00;
   --color-midnight: #050505;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-sans: 'Outfit', sans-serif;
 }
 
 @layer base {
   body {
     @apply bg-[#050505] text-white;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
     background-image: 
       radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
     background-size: 40px 40px;
   }
 
   a, button, [role="button"], input[type="submit"], select {
-    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ccff00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 2v20M2 12h20M5.5 5.5l13 13M18.5 5.5l-13 13'/><circle cx='12' cy='12' r='4' fill='%23ccff00' stroke='none'/></svg>") 12 12, auto !important;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10' stroke='%23ffffff' stroke-width='1.5'/><path d='M12 2v20M2 12h20M5.5 5.5l13 13M18.5 5.5l-13 13' stroke='%23ffffff' stroke-width='1'/><circle cx='12' cy='12' r='4' fill='%2300f0ff' stroke='none'/></svg>") 12 12, auto !important;
+  }
+
+  /* Custom Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
   }
 
   .animate-ai-pulse {
