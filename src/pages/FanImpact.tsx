@@ -9,18 +9,14 @@ import {
   Droplets, 
   Wind, 
   Footprints, 
-  Trophy, 
   ChevronRight, 
   CheckCircle2, 
-  Leaf,
-  Users
+  Leaf
 } from 'lucide-react';
 import { 
   BarChart, 
   Bar, 
   XAxis, 
-  YAxis, 
-  CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
   Cell 
@@ -83,7 +79,7 @@ export default function FanImpact() {
                   contentStyle={{ backgroundColor: '#0a0a0b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem' }}
                 />
                 <Bar dataKey="value" radius={[10, 10, 0, 0]}>
-                  {data.map((entry, index) => (
+                  {data.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={index === 0 ? '#3b82f6' : index === 1 ? '#ccff00' : '#10b981'} />
                   ))}
                 </Bar>

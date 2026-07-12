@@ -3,15 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion } from 'motion/react';
+
 import { useAppStore } from '../store/app-store';
+import { useNavigate } from 'react-router-dom';
 import { 
   Accessibility, 
   MapPin, 
-  Eye, 
-  Volume2, 
   ChevronRight, 
-  Info, 
   Heart,
   ShieldCheck,
   Zap,
@@ -27,9 +25,12 @@ export default function AccessibilityExperience() {
     toggleHighContrast, 
     isReducedMotion, 
     toggleReducedMotion, 
+    isQuietRoutePreferred,
+    toggleQuietRoutePreferred,
     fontSize, 
     setFontSize 
   } = useAppStore();
+  const navigate = useNavigate();
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-20">
@@ -96,8 +97,8 @@ export default function AccessibilityExperience() {
             <ControlToggle 
               label="Quiet Route Planning" 
               desc="Prioritize routes that avoid high-decibel areas."
-              active={true}
-              onClick={() => {}}
+              active={isQuietRoutePreferred}
+              onClick={toggleQuietRoutePreferred}
             />
             <ControlToggle 
               label="Reduced Motion" 
@@ -117,16 +118,19 @@ export default function AccessibilityExperience() {
             icon={MapPin} 
             title="Quiet Rooms" 
             desc="4 sensory-friendly spaces available in Zones 1, 4, 9, 12."
+            onClick={() => navigate('/fan/navigate?dest=Quiet Rooms')}
           />
           <FacilityCard 
             icon={Zap} 
             title="Mobility Hubs" 
             desc="Powerchair charging and equipment assistance."
+            onClick={() => navigate('/fan/navigate?dest=Mobility Hubs')}
           />
           <FacilityCard 
             icon={ShieldCheck} 
             title="Companion Access" 
             desc="Verify companion credentials for prioritized entry."
+            onClick={() => navigate('/fan/navigate?dest=Accessibility Hub')}
           />
         </div>
       </div>
@@ -175,9 +179,12 @@ function ControlToggle({ label, desc, active, onClick }: any) {
   );
 }
 
-function FacilityCard({ icon: Icon, title, desc }: any) {
+function FacilityCard({ icon: Icon, title, desc, onClick }: any) {
   return (
-    <div className="p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-blue-500/30 transition-all cursor-pointer">
+    <div 
+      onClick={onClick}
+      className="p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-blue-500/30 transition-all cursor-pointer"
+    >
       <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-6">
         <Icon className="w-5 h-5 text-blue-500" />
       </div>

@@ -23,7 +23,6 @@ import {
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
-import { Button } from '../ui/button';
 
 export default function AppShell() {
   const { role, setRole, language, setLanguage } = useAppStore();

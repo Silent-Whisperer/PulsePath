@@ -4,17 +4,12 @@
  */
 
 import { motion } from 'motion/react';
-import { useSimulationStore } from '../store/simulation-store';
+
 import { 
   Users, 
   MapPin, 
-  CheckCircle2, 
-  Clock, 
-  MessageSquare, 
-  ShieldAlert, 
   Zap,
   Globe,
-  ChevronRight,
   HelpCircle
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -22,7 +17,7 @@ import { useState } from 'react';
 import { cn } from '../lib/utils';
 
 export default function VolunteerHub() {
-  const { incidents } = useSimulationStore();
+
   const [activeTab, setActiveTab] = useState<'tasks' | 'phrases'>('tasks');
 
   const tasks = [

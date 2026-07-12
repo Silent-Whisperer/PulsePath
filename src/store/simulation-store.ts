@@ -19,34 +19,37 @@ interface SimulationStore {
   addIncident: (incident: Incident) => void;
   resolveIncident: (id: string) => void;
   tick: () => void;
+  resetStore: () => void;
 }
+
+const getDefaultIncidents = (): Incident[] => [
+  {
+    id: 'inc-1',
+    type: 'crowd',
+    severity: 'critical',
+    title: 'Gate B Crowd Surge',
+    description: 'Unexpected high density detected at Gate B. Transit shuttle synchronization failure suspected.',
+    location: [19.3029, -99.1485],
+    zoneId: 'East Upper Deck',
+    timestamp: new Date().toISOString(),
+    status: 'new'
+  },
+  {
+    id: 'inc-2',
+    type: 'accessibility',
+    severity: 'medium',
+    title: 'Elevator Outage: North Concourse',
+    description: 'Elevator EL-04 is currently out of service for maintenance. Rerouting accessibility users to EL-05.',
+    location: [19.3045, -99.1505],
+    zoneId: 'North Lower Concourse',
+    timestamp: new Date().toISOString(),
+    status: 'acknowledged'
+  }
+];
 
 export const useSimulationStore = create<SimulationStore>((set) => ({
   state: SCENARIOS[0].initialState,
-  incidents: [
-    {
-      id: 'inc-1',
-      type: 'crowd',
-      severity: 'critical',
-      title: 'Gate B Crowd Surge',
-      description: 'Unexpected high density detected at Gate B. Transit shuttle synchronization failure suspected.',
-      location: [19.3029, -99.1485],
-      zoneId: 'East Upper Deck',
-      timestamp: new Date().toISOString(),
-      status: 'new'
-    },
-    {
-      id: 'inc-2',
-      type: 'accessibility',
-      severity: 'medium',
-      title: 'Elevator Outage: North Concourse',
-      description: 'Elevator EL-04 is currently out of service for maintenance. Rerouting accessibility users to EL-05.',
-      location: [19.3045, -99.1505],
-      zoneId: 'North Lower Concourse',
-      timestamp: new Date().toISOString(),
-      status: 'acknowledged'
-    }
-  ],
+  incidents: getDefaultIncidents(),
   gates: GATES,
   zones: ZONES,
   transit: TRANSIT_ROUTES,
@@ -73,5 +76,12 @@ export const useSimulationStore = create<SimulationStore>((set) => ({
         currentDensity: parseFloat(Math.min(1, Math.max(0.1, z.currentDensity + (Math.random() - 0.5) * 0.05)).toFixed(2))
       }))
     };
+  }),
+  resetStore: () => set({
+    state: SCENARIOS[0].initialState,
+    incidents: getDefaultIncidents(),
+    gates: GATES,
+    zones: ZONES,
+    transit: TRANSIT_ROUTES,
   }),
 }));

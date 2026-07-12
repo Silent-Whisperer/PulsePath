@@ -4,13 +4,12 @@
  */
 
 import { motion } from 'motion/react';
-import { useSimulationStore } from '../store/simulation-store';
+
 import { 
   BrainCircuit, 
   Target, 
   Zap, 
   TrendingUp, 
-  History,
   CheckCircle2,
   AlertTriangle,
   Lightbulb
@@ -18,7 +17,7 @@ import {
 import { Button } from '../components/ui/button';
 
 export default function OperationsInsights() {
-  const { state } = useSimulationStore();
+
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 lg:space-y-12 pb-20">

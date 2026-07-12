@@ -29,7 +29,7 @@ import AppShell from './components/layout/AppShell';
 import { useSimulation } from './hooks/use-simulation';
 
 export default function App() {
-  const { isHighContrast, isReducedMotion, fontSize, role } = useAppStore();
+  const { isHighContrast, isReducedMotion, fontSize } = useAppStore();
   useSimulation();
 
   useEffect(() => {

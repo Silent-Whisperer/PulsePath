@@ -4,12 +4,12 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { useUserStore } from '../store/user-store';
 import { useAppStore } from '../store/app-store';
 import { askPulse } from '../lib/ai/client';
 import { Send, User, BrainCircuit, Sparkles, ChevronRight } from 'lucide-react';
-import { Button } from '../components/ui/button';
+
 import { cn } from '../lib/utils';
 
 const UI_TRANSLATIONS: Record<string, {

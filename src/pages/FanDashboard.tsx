@@ -19,13 +19,13 @@ import {
   AlertTriangle,
   Zap
 } from 'lucide-react';
-import { Button } from '../components/ui/button';
+
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
 export default function FanDashboard() {
   const { ticket, sustainability } = useUserStore();
-  const { state, gates, transit, incidents } = useSimulationStore();
+  const { state, gates, incidents } = useSimulationStore();
   const navigate = useNavigate();
 
   const activeIncidents = incidents.filter(i => i.status !== 'resolved');

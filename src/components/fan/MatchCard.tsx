@@ -4,7 +4,7 @@
  */
 
 import { motion } from 'motion/react';
-import { Ticket, MapPin, Clock } from 'lucide-react';
+import { Ticket } from 'lucide-react';
 
 interface MatchCardProps {
   match: string;

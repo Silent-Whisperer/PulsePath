@@ -3,19 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion } from 'motion/react';
+
 import StadiumMap from '../components/map/StadiumMap';
 import { useSimulationStore } from '../store/simulation-store';
 import { 
-  Activity, 
   Users, 
-  Clock, 
   ShieldAlert, 
   ChevronRight, 
   BrainCircuit, 
-  Zap,
-  TrendingUp,
-  Map as MapIcon
+  TrendingUp
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -23,10 +19,6 @@ import { cn } from '../lib/utils';
 import { 
   AreaChart, 
   Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
 
@@ -39,7 +31,7 @@ const flowData = [
 ];
 
 export default function OperationsDashboard() {
-  const { state, incidents, gates } = useSimulationStore();
+  const { state, incidents } = useSimulationStore();
   const navigate = useNavigate();
 
   const activeAlerts = incidents.filter(i => i.status !== 'resolved');

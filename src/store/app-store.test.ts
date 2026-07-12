@@ -8,6 +8,7 @@ describe('useAppStore state management', () => {
       language: 'en',
       isHighContrast: false,
       isReducedMotion: false,
+      isQuietRoutePreferred: false,
       fontSize: 'normal',
     });
   });
@@ -16,12 +17,19 @@ describe('useAppStore state management', () => {
     const state = useAppStore.getState();
     expect(state.role).toBe('fan');
     expect(state.isHighContrast).toBe(false);
+    expect(state.isQuietRoutePreferred).toBe(false);
   });
 
   test('toggleHighContrast should change contrast state', () => {
     const { toggleHighContrast } = useAppStore.getState();
     toggleHighContrast();
     expect(useAppStore.getState().isHighContrast).toBe(true);
+  });
+
+  test('toggleQuietRoutePreferred should change quiet routing preference', () => {
+    const { toggleQuietRoutePreferred } = useAppStore.getState();
+    toggleQuietRoutePreferred();
+    expect(useAppStore.getState().isQuietRoutePreferred).toBe(true);
   });
 
   test('setFontSize should update correctly', () => {

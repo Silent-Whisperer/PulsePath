@@ -3,12 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle, Polyline } from 'react-leaflet';
 import { STADIUM_CENTER, ZONES, GATES, VENDORS } from '../../data/stadium';
-import { Icon, divIcon } from 'leaflet';
+import { divIcon } from 'leaflet';
 import { useSimulationStore } from '../../store/simulation-store';
-import { useAppStore } from '../../store/app-store';
-import { cn } from '../../lib/utils';
 
 // Helper to create themed icons
 const createIcon = (color: string) => divIcon({
@@ -18,9 +16,16 @@ const createIcon = (color: string) => divIcon({
   iconAnchor: [6, 6]
 });
 
-export default function StadiumMap({ showHeatmap = false }: { showHeatmap?: boolean }) {
-  const { zones, gates } = useSimulationStore();
-  const { isHighContrast } = useAppStore();
+export default function StadiumMap({
+  showHeatmap = false,
+  routeCoordinates,
+  routeColor
+}: {
+  showHeatmap?: boolean;
+  routeCoordinates?: [number, number][];
+  routeColor?: string;
+}) {
+  const { zones } = useSimulationStore();
 
   return (
     <div className="w-full h-full relative group">
@@ -102,6 +107,21 @@ export default function StadiumMap({ showHeatmap = false }: { showHeatmap?: bool
           radius={5} 
           pathOptions={{ fillColor: '#3b82f6', fillOpacity: 0.8, color: 'white', weight: 2 }} 
         />
+        {/* Active Route Path */}
+        {routeCoordinates && routeCoordinates.length > 0 && (
+          <Polyline
+            positions={routeCoordinates}
+            pathOptions={{
+              color: routeColor || '#3b82f6',
+              weight: 6,
+              opacity: 0.8,
+              dashArray: routeColor === '#10b981' ? '5, 10' : undefined,
+              lineCap: 'round',
+              lineJoin: 'round'
+            }}
+          />
+        )}
+
       </MapContainer>
 
       {/* Map Overlay Controls */}

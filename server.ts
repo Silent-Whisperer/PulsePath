@@ -13,7 +13,7 @@ import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
 // 1. Performance: Apply Gzip compression
@@ -184,12 +184,12 @@ app.post('/api/ai', aiLimiter, tightJsonParser, async (req, res) => {
   }
 });
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
 // Secure Error Handling Middleware
-app.use((err: Error & { status?: number }, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error & { status?: number }, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Unhandled server error:', err);
   const isProduction = process.env.NODE_ENV === 'production';
   res.status(err.status || 500).json({
@@ -216,7 +216,7 @@ async function startServer() {
         }
       }
     }));
-    app.get('*', (req, res) => {
+    app.get('*', (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
@@ -226,4 +226,6 @@ async function startServer() {
   });
 }
 
-startServer();
+if (process.env.NODE_ENV !== 'test' && !process.env.VITEST) {
+  startServer();
+}

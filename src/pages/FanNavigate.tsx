@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { askPulse } from '../lib/ai/client';
 import StadiumMap from '../components/map/StadiumMap';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Search, 
   Navigation, 
@@ -21,13 +22,43 @@ import {
 import { Button } from '../components/ui/button';
 import { cn } from '../lib/utils';
 
+const ROUTE_PATHS: Record<string, [number, number][]> = {
+  'Gate A': [[19.303, -99.151], [19.304, -99.151], [19.3045, -99.1505]],
+  'Gate C': [[19.303, -99.151], [19.302, -99.151], [19.3013, -99.1505]],
+  'Food Court East': [[19.303, -99.151], [19.3035, -99.1515]],
+  'Accessibility Hub': [[19.303, -99.151], [19.304, -99.1505]],
+  'Quiet Rooms': [[19.303, -99.151], [19.3025, -99.1505], [19.302, -99.150]],
+  'Mobility Hubs': [[19.303, -99.151], [19.3035, -99.151], [19.3045, -99.1505]],
+};
+
 export default function FanNavigate() {
+  const [searchParams] = useSearchParams();
+  const destParam = searchParams.get('dest');
+
   const [activeRoute, setActiveRoute] = useState<any>(null);
   const [filters, setFilters] = useState({
     stepFree: false,
     lowSensory: false,
     avoidCrowds: true
   });
+
+  const getCoordinates = (destination: string) => {
+    const cleanDest = Object.keys(ROUTE_PATHS).find(key => destination.startsWith(key)) || 'Gate C';
+    const base = ROUTE_PATHS[cleanDest];
+    if (filters.stepFree) {
+      return base.map(coord => [coord[0] + 0.0001, coord[1] - 0.0001] as [number, number]);
+    }
+    if (filters.lowSensory) {
+      return base.map(coord => [coord[0] - 0.0001, coord[1] + 0.0001] as [number, number]);
+    }
+    return base;
+  };
+
+  const getRouteColor = () => {
+    if (filters.lowSensory) return '#10b981'; // emerald green
+    if (filters.stepFree) return '#3b82f6'; // blue
+    return '#ccff00'; // lime yellow
+  };
 
   const handlePlanRoute = async (destLabel?: string) => {
     const destination = destLabel || 'Gate C (South)';
@@ -64,11 +95,21 @@ export default function FanNavigate() {
     }
   };
 
+  useEffect(() => {
+    if (destParam) {
+      handlePlanRoute(destParam);
+    }
+  }, [destParam]);
+
   return (
     <div className="grid lg:grid-cols-[1fr_400px] gap-8 min-h-full">
       {/* Map Section */}
       <div className="relative bg-white/5 border border-white/10 rounded-[2rem] lg:rounded-[2.5rem] overflow-hidden shadow-2xl h-[400px] lg:h-[calc(100vh-12rem)]">
-        <StadiumMap showHeatmap={filters.avoidCrowds} />
+        <StadiumMap 
+          showHeatmap={filters.avoidCrowds} 
+          routeCoordinates={activeRoute ? getCoordinates(activeRoute.destination) : undefined}
+          routeColor={getRouteColor()}
+        />
         
         {/* Floating Search */}
         <div className="absolute top-4 left-4 right-4 lg:top-6 lg:left-6 z-[1000] lg:w-full lg:max-w-sm">

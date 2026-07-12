@@ -3,15 +3,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Message } from '../../types';
+
 
 export async function askPulse(prompt: string, role: string, language: string, context?: any): Promise<string> {
   try {
+    const response = await fetch('/api/ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ prompt, role, language, context })
+    });
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.text;
+  } catch (error: any) {
+    console.warn('Backend fetch failed, falling back to mock response', error);
     // Fake loading delay to simulate AI processing time
     await new Promise(resolve => setTimeout(resolve, 1500));
-    return getMockResponse(prompt, role, language);
-  } catch (error: any) {
-    console.warn('Fallback error', error);
     return getMockResponse(prompt, role, language);
   }
 }

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion } from 'motion/react';
+
 import { useSimulationStore } from '../store/simulation-store';
 import { SCENARIOS } from '../data/scenarios';
 import { 
@@ -22,7 +22,7 @@ import { Button } from '../components/ui/button';
 import { cn } from '../lib/utils';
 
 export default function SimulationCenter() {
-  const { state, setScenario, updateState, tick } = useSimulationStore();
+  const { state, setScenario, updateState, tick, resetStore } = useSimulationStore();
 
   return (
     <div className="max-w-5xl mx-auto space-y-12 pb-20">
@@ -43,7 +43,7 @@ export default function SimulationCenter() {
           <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => tick()}>
             <Timer className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="rounded-xl">
+          <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => resetStore()}>
             <RotateCcw className="w-5 h-5" />
           </Button>
         </div>

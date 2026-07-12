@@ -8,11 +8,9 @@ import {
   Settings, 
   User, 
   Languages, 
-  Accessibility, 
   Shield, 
   LogOut,
   ChevronRight,
-  Globe,
   Bell
 } from 'lucide-react';
 import { Button } from '../components/ui/button';

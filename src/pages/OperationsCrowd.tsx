@@ -3,21 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion } from 'motion/react';
+
 import { useSimulationStore } from '../store/simulation-store';
 import { 
   BarChart, 
   Bar, 
   XAxis, 
-  YAxis, 
-  CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
   Cell,
   LineChart,
   Line
 } from 'recharts';
-import { Users, AlertTriangle, TrendingUp, ArrowDownRight, Zap } from 'lucide-react';
+import { Users, TrendingUp, Zap } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 const predictionData = [
