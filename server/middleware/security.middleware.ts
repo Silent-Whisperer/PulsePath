@@ -7,9 +7,21 @@ import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import cors from 'cors';
 
 // 1. Gzip compression
 export const compressionMiddleware = compression();
+
+// 2. CORS Middleware
+export const corsMiddleware = cors({
+  origin:
+    process.env.NODE_ENV === 'production'
+      ? false // Or specific domain names
+      : ['http://localhost:5173', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+});
 
 // 2. Helmet Hardened Content Security Policy (Leaflet maps & Gemini API compliant)
 export const helmetMiddleware = helmet({

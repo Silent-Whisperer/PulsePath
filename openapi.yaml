@@ -1,0 +1,74 @@
+openapi: 3.0.3
+info:
+  title: Pulse Path API
+  description: API specifications for smart stadium assistance and dashboard operations.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+paths:
+  /api/ai:
+    post:
+      summary: Get AI assistant guidance
+      description: Returns translation-specific stadium navigation assistance based on user query and active role.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  maxLength: 1000
+                  example: "Where is the nearest food station?"
+                role:
+                  type: string
+                  enum: [fan, operations, volunteer, accessibility]
+                  default: fan
+                  example: "fan"
+                language:
+                  type: string
+                  enum: [en, es, fr, hi, ar]
+                  default: en
+                  example: "en"
+      responses:
+        '200':
+          description: Successful AI query response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  text:
+                    type: string
+                    example: "There are 3 vegetarian-friendly vendors in your current zone. Azteca Tacos (Zone 1) has the shortest queue..."
+        '400':
+          description: Validation error or prompt injection detected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Security validation failed: Prohibited instruction pattern detected."
+        '500':
+          description: Internal Server Error
+  /api/health:
+    get:
+      summary: Health check endpoint
+      description: Returns server operational status.
+      responses:
+        '200':
+          description: Server is online
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"

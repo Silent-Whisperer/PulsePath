@@ -87,7 +87,9 @@ export default function Sidebar({ role, setRole, pathname }: SidebarProps) {
           <div className="text-xs text-gray-500 mb-2">SWITCH ROLE</div>
           <select
             value={role}
-            onChange={(e) => setRole(e.target.value as any)}
+            onChange={(e) =>
+              setRole(e.target.value as 'fan' | 'operations' | 'volunteer' | 'accessibility')
+            }
             className="w-full bg-black border border-white/10 rounded px-2 py-1 text-sm focus:outline-none focus:border-[#ccff00]"
           >
             <option value="fan">Fan</option>

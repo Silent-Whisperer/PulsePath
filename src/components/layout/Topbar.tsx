@@ -38,7 +38,7 @@ export default function Topbar({ onMenuClick, title, language, setLanguage }: To
         <div className="flex items-center gap-3">
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value as any)}
+            onChange={(e) => setLanguage(e.target.value as 'en' | 'es' | 'fr' | 'hi' | 'ar')}
             className="bg-transparent text-sm text-gray-400 focus:outline-none"
           >
             <option value="en">EN</option>

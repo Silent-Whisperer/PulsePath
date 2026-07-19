@@ -7,7 +7,7 @@ export async function askPulse(
   prompt: string,
   role: string,
   language: string,
-  context?: any
+  context?: unknown
 ): Promise<string> {
   try {
     const response = await fetch('/api/ai', {
@@ -23,7 +23,7 @@ export async function askPulse(
     }
     const data = await response.json();
     return data.text;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.warn('Backend fetch failed, falling back to mock response', error);
     // Fake loading delay to simulate AI processing time
     await new Promise((resolve) => setTimeout(resolve, 1500));

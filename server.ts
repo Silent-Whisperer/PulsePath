@@ -4,6 +4,7 @@ import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
 import {
   compressionMiddleware,
+  corsMiddleware,
   helmetMiddleware,
   globalLimiter,
   aiLimiter,
@@ -21,6 +22,9 @@ const PORT = Number(process.env.PORT) || 3000;
 
 // Performance: Apply Gzip compression
 app.use(compressionMiddleware);
+
+// Security: Enable CORS
+app.use(corsMiddleware);
 
 // Security: Disable X-Powered-By header
 app.disable('x-powered-by');
