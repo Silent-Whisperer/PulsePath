@@ -27,13 +27,24 @@ Pulse Path is an intelligent, real-time stadium operations and fan-experience ne
 
 ---
 
+## 🏗️ Architecture & Entry Points
+
+Pulse Path is built as a split client-server SPA (Single Page Application). You can view the full design and state flow diagram inside the [ARCHITECTURE.md](ARCHITECTURE.md) document.
+
+- **Vite React Entry**: [src/main.tsx](src/main.tsx)
+- **Express Backend Entry**: [server.ts](server.ts)
+- **Shared API Config**: [openapi.yaml](openapi.yaml)
+
+---
+
 ## 🛠️ Technology Stack
 
 - **Frontend:** React 19, TypeScript, TailwindCSS, Lucide Icons, Recharts, Leaflet, Framer Motion
-- **Backend:** Express, Node.js, TSX
+- **Backend:** Express, Node.js, TSX, Zod (Request Validation)
 - **Database / State:** Zustand (for client-side state synchronization)
 - **AI Integration:** Google GenAI SDK (Gemini 1.5 Flash)
-- **Security:** Helmet CSP hardening, Express rate limiters, Prompt injection detection, Tight JSON parser boundaries
+- **Security:** CORS origin limits, Helmet CSP hardening, Express rate limiters, Prompt injection detection, Tight JSON parser boundaries
+- **Developer Tooling:** ESLint Flat Config, Prettier formatting, Husky + lint-staged (pre-commit checking)
 
 ---
 
@@ -75,12 +86,28 @@ Pulse Path is an intelligent, real-time stadium operations and fan-experience ne
 
 ---
 
-## 🧪 Testing
+## 🧪 Verification & Tooling
 
-Pulse Path comes equipped with unit and integration tests powered by Vitest.
+### Run Linter & TypeScript Type-Check
+Pulse Path implements strict lint rules globally, excluding page templates to allow legacy flexibility:
+```bash
+npm run lint
+```
 
-To run the tests:
+### Auto-Format Codebase
+Uses Prettier rules for clean indentations and layout structures:
+```bash
+npm run format
+```
 
+### Pre-commit Checks
+Husky will automatically run Prettier and ESLint on your modified files before allowing a commit:
+```bash
+npx lint-staged
+```
+
+### Run Vitest Suites
+Pulse Path comes equipped with unit and integration tests for React stores, simulation tickers, client utilities, and Express routes.
 ```bash
 npm run test
 ```
