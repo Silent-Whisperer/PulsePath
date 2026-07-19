@@ -4,6 +4,43 @@ Pulse Path is an intelligent, real-time stadium operations and fan-experience ne
 
 ---
 
+## 🎯 FIFA World Cup 2026 Problem Statement Alignment
+
+Pulse Path is engineered to address the complex logistics, accessibility needs, and operational resiliency challenges of a multi-country, multi-city tournament (USA, Canada, and Mexico). Below is a mapping of the core problem requirements to our codebase features:
+
+### 1. Unified Multi-Venue Orchestration
+- **The Problem:** Coordinating across 16 different stadiums and host cities across North America.
+- **Pulse Path Solution:** Features interactive onboarding where users select their specific host venue (e.g., Estadio Azteca, MetLife Stadium, SoFi Stadium). The system dynamically shifts map center points, queue predictions, incident mock locations, and active route paths relative to the selected venue.
+- **Code Reference:** Configured in [stadium.ts](file:///d:/Pulse%20Path/src/data/stadium.ts) and dynamically rendered in [StadiumMap.tsx](file:///d:/Pulse%20Path/src/components/map/StadiumMap.tsx).
+
+### 2. Multi-Lingual Fan Assistant & AI Copilot
+- **The Problem:** Welcoming millions of international fans speaking diverse languages.
+- **Pulse Path Solution:** Integrating a real-time Gemini-powered smart assistant supporting 5 major tournament languages (English, Spanish, French, Hindi, Arabic). It provides localized transit statuses, crowd density bypass suggestions, and official safety policies.
+- **Code Reference:** Interface at [FanAssistant.tsx](file:///d:/Pulse%20Path/src/pages/FanAssistant.tsx) and backend endpoint `/api/ai` defined in [server.ts](file:///d:/Pulse%20Path/server.ts).
+
+### 3. Accessible & Low-Sensory Navigation
+- **The Problem:** Providing equal access and comfort for neurodivergent fans and fans with mobility needs.
+- **Pulse Path Solution:** An Accessibility Suite with high-contrast UI mode, screen-reader optimizations, and font-size scaling. Features custom Leaflet navigation paths for **Step-Free routes** (avoiding stairs/escalators) and **Quiet Routes** (low-sensory corridors avoiding crowded areas).
+- **Code Reference:** Defined in [AccessibilityExperience.tsx](file:///d:/Pulse%20Path/src/pages/AccessibilityExperience.tsx) and route calculators in [FanNavigate.tsx](file:///d:/Pulse%20Path/src/pages/FanNavigate.tsx).
+
+### 4. Eco-Impact & Sustainability Tracking
+- **The Problem:** Running a green tournament with minimal carbon footprint and plastic waste.
+- **Pulse Path Solution:** Gamified tracking of eco-friendly behaviors (plastic water bottles saved, carbon offset by taking public transit, steps walked) rewarded with redeemable points.
+- **Code Reference:** Page view in [FanImpact.tsx](file:///d:/Pulse%20Path/src/pages/FanImpact.tsx) and synchronized state via `useUserStore`.
+
+### 5. Resilient Operations & Crowd Simulation
+- **The Problem:** Preventing dangerous crowd surges and responding to real-time weather/transit disruptions.
+- **Pulse Path Solution:** Command center with density mapping overlays, active incident tracking, and tactical simulators allowing staff to stress-test the venue with rainstorms, transit disruptions, and gate closures.
+- **Code Reference:** Dashboards in [OperationsDashboard.tsx](file:///d:/Pulse%20Path/src/pages/OperationsDashboard.tsx) and [SimulationCenter.tsx](file:///d:/Pulse%20Path/src/pages/SimulationCenter.tsx).
+
+### 6. Official Tournament Policies & Security Guardrails
+- **The Problem:** Disseminating crucial security constraints (clear bag policy, transit benefits) and protecting infrastructure from malicious prompts.
+- **Pulse Path Solution:** Dashboard policy cards detailing official clear bag constraints and free match-day public transit pass benefits. The backend implements CORS boundary checks, rate-limiting, and prompt-injection detection to secure AI systems.
+- **Code Reference:** Policy card in [FanDashboard.tsx](file:///d:/Pulse%20Path/src/pages/FanDashboard.tsx) and protection filters in [server/utils/security.ts](file:///d:/Pulse%20Path/server/utils/security.ts).
+
+---
+
+
 ## 🚀 Key Features
 
 ### 🏟️ Fan Experience

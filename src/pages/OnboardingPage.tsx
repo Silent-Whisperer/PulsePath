@@ -1,18 +1,16 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store/app-store';
 import { Check, ArrowRight, User, Languages, Accessibility, Ticket } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { useUserStore } from '../store/user-store';
+import { VENUES } from '../data/stadium';
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const { role, language, setLanguage, setRole } = useAppStore();
+  const { venueId, setVenue, ticket, setTicket } = useUserStore();
   const [step, setStep] = useState(1);
 
   const steps = [
@@ -26,6 +24,10 @@ export default function OnboardingPage() {
     if (step < 4) setStep(step + 1);
     else navigate(role === 'fan' ? '/fan' : role === 'operations' ? '/operations' : '/volunteer');
   };
+
+  const selectedVenue = VENUES[venueId] || VENUES['estadio-azteca'];
+  const matches = selectedVenue.matches;
+  const currentMatch = matches.find((m) => m.teams === ticket.match) || matches[0];
 
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center p-6">
@@ -116,25 +118,72 @@ export default function OnboardingPage() {
           {step === 4 && (
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-4">Match Day Setup</h2>
-              <p className="text-gray-400 mb-8">Confirming your fixture details.</p>
-              <div className="bg-white/5 rounded-2xl p-6 mb-8 text-left border border-white/10">
-                <div className="text-xs text-[#ccff00] font-bold uppercase mb-2">
-                  Selected Match
+              <p className="text-gray-400 mb-8 font-medium">
+                Select your host venue and match fixture.
+              </p>
+              <div className="space-y-4 mb-8 text-left">
+                <div>
+                  <label className="text-xs text-gray-500 uppercase font-bold block mb-1">
+                    Select Tournament Venue
+                  </label>
+                  <select
+                    value={venueId}
+                    onChange={(e) => {
+                      const nextVenueId = e.target.value;
+                      setVenue(nextVenueId);
+                      const defaultMatch = VENUES[nextVenueId].matches[0];
+                      setTicket({ match: defaultMatch.teams });
+                    }}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#ccff00] text-sm"
+                  >
+                    {Object.values(VENUES).map((v) => (
+                      <option key={v.id} value={v.id} className="bg-neutral-900 text-white">
+                        {v.name} ({v.city})
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="text-xl font-bold mb-4">Mexico City vs Toronto</div>
-                <div className="grid grid-cols-2 gap-4">
+
+                <div>
+                  <label className="text-xs text-gray-500 uppercase font-bold block mb-1">
+                    Select Match Fixture
+                  </label>
+                  <select
+                    value={ticket.match}
+                    onChange={(e) => setTicket({ match: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-[#ccff00] text-sm"
+                  >
+                    {matches.map((m) => (
+                      <option key={m.id} value={m.teams} className="bg-neutral-900 text-white">
+                        {m.teams} ({m.date} at {m.time})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="bg-[#ccff00]/10 rounded-2xl p-6 mb-8 text-left border border-[#ccff00]/20">
+                <div className="text-xs text-[#ccff00] font-bold uppercase mb-2">
+                  Fixture Assigned Ticket Summary
+                </div>
+                <div className="text-lg font-bold mb-4 text-white">{ticket.match}</div>
+                <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <div className="text-xs text-gray-500 uppercase">Venue</div>
-                    <div className="text-sm font-medium">Estadio Azteca</div>
+                    <div className="text-[10px] text-gray-500 uppercase">Venue</div>
+                    <div className="text-xs font-semibold">{selectedVenue.name}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 uppercase">Kickoff</div>
-                    <div className="text-sm font-medium">19:00 Local</div>
+                    <div className="text-[10px] text-gray-500 uppercase">Kickoff</div>
+                    <div className="text-xs font-semibold">{currentMatch?.time} Local</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-gray-500 uppercase">Date</div>
+                    <div className="text-xs font-semibold">{currentMatch?.date}</div>
                   </div>
                 </div>
               </div>
-              <p className="text-xs text-gray-500 italic">
-                "PULSEPATH is now syncing with live stadium sensors..."
+              <p className="text-xs text-[#ccff00]/80 italic">
+                "PULSEPATH is syncing with live {selectedVenue.name} sensors..."
               </p>
             </div>
           )}

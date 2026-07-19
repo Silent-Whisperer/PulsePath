@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import MatchCard from '../components/fan/MatchCard';
 import { useUserStore } from '../store/user-store';
 import { useSimulationStore } from '../store/simulation-store';
+import { VENUES } from '../data/stadium';
 import {
   Navigation,
   Utensils,
@@ -24,7 +25,8 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
 export default function FanDashboard() {
-  const { ticket, sustainability } = useUserStore();
+  const { ticket, sustainability, venueId } = useUserStore();
+  const currentVenue = VENUES[venueId] || VENUES['estadio-azteca'];
   const { state, gates, incidents } = useSimulationStore();
   const navigate = useNavigate();
 
@@ -85,7 +87,7 @@ export default function FanDashboard() {
         <div className="w-12 h-12 rounded-2xl bg-[#ccff00] flex items-center justify-center shrink-0">
           <Zap className="w-6 h-6 text-black" />
         </div>
-        <div>
+        <div className="flex-1">
           <div className="text-xs font-bold text-[#ccff00] uppercase tracking-widest mb-1">
             Pulse Tip
           </div>
@@ -93,6 +95,12 @@ export default function FanDashboard() {
             "Gate C is currently 41% less congested than Gate A. Rerouting now will save you 12
             minutes of entry time."
           </p>
+          <button
+            onClick={() => navigate('/fan/navigate?dest=Gate C')}
+            className="mt-3 text-xs text-[#ccff00] font-bold hover:underline flex items-center gap-1 uppercase tracking-wider bg-transparent border-0 cursor-pointer"
+          >
+            Apply Smart Route & Navigate via Gate C →
+          </button>
         </div>
       </div>
 
@@ -136,6 +144,44 @@ export default function FanDashboard() {
             </div>
           </div>
           <div className="w-12 h-12 rounded-full border-4 border-[#ccff00]/20 border-t-[#ccff00] animate-spin-slow" />
+        </div>
+      </div>
+
+      {/* FIFA Official Policy & Security Guidelines */}
+      <div className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-6">
+        <div>
+          <h3 className="text-xl font-bold mb-2">FIFA World Cup 2026™ Stadium Guidelines</h3>
+          <p className="text-gray-400 text-sm">
+            Please review the official match-day policies for{' '}
+            <span className="text-[#ccff00] font-semibold">
+              {currentVenue.name} ({currentVenue.city})
+            </span>{' '}
+            to ensure a safe and smooth entry.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
+            <h4 className="text-sm font-bold text-[#ccff00] uppercase tracking-wider mb-2">
+              👜 Official Bag Policy
+            </h4>
+            <ul className="text-xs text-gray-400 space-y-2 list-disc list-inside">
+              <li>Only clear plastic bags (max 12" x 6" x 12") are permitted.</li>
+              <li>Small clutch bags/wristlets (max 4.5" x 6.5") do not need to be clear.</li>
+              <li>Exceptions will be made for medically necessary items after screening.</li>
+            </ul>
+          </div>
+
+          <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
+            <h4 className="text-sm font-bold text-blue-400 uppercase tracking-wider mb-2">
+              🚇 Free Public Transit
+            </h4>
+            <ul className="text-xs text-gray-400 space-y-2 list-disc list-inside">
+              <li>Your match ticket serves as a free transit pass on all regional lines.</li>
+              <li>Metro/shuttles run with increased frequency starting 4 hours before kickoff.</li>
+              <li>Use the Smart Navigation tab for real-time accessible route planning.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

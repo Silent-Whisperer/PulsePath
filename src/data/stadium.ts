@@ -7,6 +7,64 @@ import { StadiumZone, Gate, Vendor, TransitRoute } from '../types';
 
 export const STADIUM_CENTER: [number, number] = [19.3029, -99.1505]; // Estadio Azteca as reference
 
+export interface Venue {
+  id: string;
+  name: string;
+  city: string;
+  center: [number, number];
+  matches: { id: string; teams: string; time: string; date: string }[];
+}
+
+export const VENUES: Record<string, Venue> = {
+  'estadio-azteca': {
+    id: 'estadio-azteca',
+    name: 'Estadio Azteca',
+    city: 'Mexico City, Mexico',
+    center: [19.3029, -99.1505],
+    matches: [
+      { id: 'match-1', teams: 'Mexico vs Toronto FC', time: '19:00', date: '2026-06-11' },
+      { id: 'match-2', teams: 'Mexico City vs Toronto', time: '19:00', date: '2026-06-18' },
+    ],
+  },
+  'metlife-stadium': {
+    id: 'metlife-stadium',
+    name: 'MetLife Stadium',
+    city: 'New York / New Jersey, USA',
+    center: [40.8135, -74.0743],
+    matches: [
+      { id: 'match-3', teams: 'USA vs Italy', time: '20:00', date: '2026-06-15' },
+      { id: 'match-4', teams: 'Argentina vs France', time: '21:00', date: '2026-07-19' },
+    ],
+  },
+  'sofi-stadium': {
+    id: 'sofi-stadium',
+    name: 'SoFi Stadium',
+    city: 'Los Angeles, USA',
+    center: [33.9534, -118.3392],
+    matches: [
+      { id: 'match-5', teams: 'USA vs Canada', time: '18:00', date: '2026-06-12' },
+      { id: 'match-6', teams: 'Brazil vs Germany', time: '17:30', date: '2026-06-25' },
+    ],
+  },
+};
+
+export function getCoordinateShift(venueId: string): [number, number] {
+  const venue = VENUES[venueId] || VENUES['estadio-azteca'];
+  const baseCenter = VENUES['estadio-azteca'].center;
+  return [venue.center[0] - baseCenter[0], venue.center[1] - baseCenter[1]];
+}
+
+export function shiftLatLng(latLng: [number, number], shift: [number, number]): [number, number] {
+  return [latLng[0] + shift[0], latLng[1] + shift[1]];
+}
+
+export function shiftPolygon(
+  polygon: [number, number][],
+  shift: [number, number]
+): [number, number][] {
+  return polygon.map((p) => shiftLatLng(p, shift));
+}
+
 export const ZONES: StadiumZone[] = [
   {
     id: 'north-lower',

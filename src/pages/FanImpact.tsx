@@ -9,9 +9,36 @@ import { Droplets, Wind, Footprints, ChevronRight, CheckCircle2, Leaf } from 'lu
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 import { Button } from '../components/ui/button';
+import { cn } from '../lib/utils';
 
 export default function FanImpact() {
-  const { sustainability } = useUserStore();
+  const { sustainability, updateSustainability } = useUserStore();
+
+  const handleRefillAction = () => {
+    if (sustainability.bottlesSaved < 5) {
+      const nextRefills = sustainability.bottlesSaved + 1;
+      const pointsGain = nextRefills === 3 ? 50 : 15; // bonus points on challenge completion
+      updateSustainability({
+        bottlesSaved: nextRefills,
+        points: sustainability.points + pointsGain,
+      });
+    }
+  };
+
+  const handleWasteAction = () => {
+    // Simulate eco-bin disposal (one-shot challenge)
+    updateSustainability({
+      points: sustainability.points + 30,
+    });
+  };
+
+  const handleLogTransitAction = () => {
+    // Add 2.0 kg CO2 offset and 25 points for public transit choice
+    updateSustainability({
+      carbonSaved: parseFloat((sustainability.carbonSaved + 2.0).toFixed(1)),
+      points: sustainability.points + 25,
+    });
+  };
 
   const data = [
     { name: 'Water', value: sustainability.bottlesSaved, goal: 5, unit: 'Liters' },
@@ -116,42 +143,55 @@ export default function FanImpact() {
           icon={Droplets}
           label="Water Saved"
           value={`${sustainability.bottlesSaved} Refills`}
-          desc="equivalent to 2 plastic bottles avoided."
+          desc="equivalent to avoiding single-use plastic bottles."
           color="blue"
         />
         <ImpactStat
           icon={Wind}
           label="Carbon Offset"
           value={`${sustainability.carbonSaved}kg CO2`}
-          desc="by choosing metro over private transit."
+          desc="by choosing transit over private driving."
           color="lime"
         />
         <ImpactStat
           icon={Footprints}
           label="Walking Journey"
           value={`${sustainability.stepsTaken}`}
-          desc="steps taken following optimized routes."
+          desc="steps logged following accessible paths."
           color="emerald"
         />
       </div>
 
       {/* Active Challenges */}
       <div className="space-y-6">
-        <h2 className="text-3xl font-bold tracking-tight">Active Challenges</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-3xl font-bold tracking-tight">Active Challenges</h2>
+          <Button
+            size="sm"
+            onClick={handleLogTransitAction}
+            className="bg-[#ccff00] text-black hover:bg-[#d9ff33] rounded-xl text-xs py-1.5 h-auto font-bold uppercase tracking-wider"
+          >
+            🚇 Log Public Transit Use (+25 pts)
+          </Button>
+        </div>
         <div className="grid md:grid-cols-2 gap-6">
           <Challenge
             title="The Refill King"
             desc="Use any stadium water station 3 times today."
-            progress={2}
+            progress={Math.min(sustainability.bottlesSaved, 3)}
             total={3}
             reward="50 pts"
+            onAction={handleRefillAction}
+            actionLabel={sustainability.bottlesSaved >= 3 ? 'Completed' : 'Log Refill Station Use'}
           />
           <Challenge
             title="Clean Concourse"
             desc="Dispose of waste at any eco-bin point."
-            progress={0}
+            progress={sustainability.points > 120 ? 1 : 0} // visual marker
             total={1}
             reward="30 pts"
+            onAction={handleWasteAction}
+            actionLabel={sustainability.points > 120 ? 'Completed' : 'Log Waste Disposal'}
           />
         </div>
       </div>
@@ -196,34 +236,55 @@ function ImpactStat({ icon: Icon, label, value, desc, color }: any) {
   );
 }
 
-function Challenge({ title, desc, progress, total, reward }: any) {
+function Challenge({ title, desc, progress, total, reward, onAction, actionLabel }: any) {
   const percentage = (progress / total) * 100;
+  const isCompleted = progress >= total;
+
   return (
-    <div className="p-6 rounded-3xl bg-white/5 border border-white/10">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h4 className="font-bold">{title}</h4>
-          <p className="text-xs text-gray-500">{desc}</p>
+    <div className="p-6 rounded-3xl bg-white/5 border border-white/10 flex flex-col justify-between h-full">
+      <div>
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h4 className="font-bold">{title}</h4>
+            <p className="text-xs text-gray-500">{desc}</p>
+          </div>
+          <div className="text-[10px] font-black bg-[#ccff00] text-black px-2 py-0.5 rounded uppercase tracking-tighter shrink-0">
+            {reward}
+          </div>
         </div>
-        <div className="text-[10px] font-black bg-[#ccff00] text-black px-2 py-0.5 rounded uppercase tracking-tighter">
-          {reward}
+        <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${percentage}%` }}
+            className="h-full bg-[#ccff00]"
+          />
+        </div>
+        <div className="flex justify-between mt-2 mb-4">
+          <span className="text-[10px] font-bold text-gray-600 uppercase">
+            {progress} / {total} Completed
+          </span>
+          <span className="text-[10px] font-bold text-[#ccff00] uppercase">
+            {Math.round(percentage)}%
+          </span>
         </div>
       </div>
-      <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${percentage}%` }}
-          className="h-full bg-[#ccff00]"
-        />
-      </div>
-      <div className="flex justify-between mt-2">
-        <span className="text-[10px] font-bold text-gray-600 uppercase">
-          {progress} / {total} Completed
-        </span>
-        <span className="text-[10px] font-bold text-[#ccff00] uppercase">
-          {Math.round(percentage)}%
-        </span>
-      </div>
+
+      {onAction && (
+        <Button
+          size="sm"
+          variant={isCompleted ? 'ghost' : 'outline'}
+          disabled={isCompleted}
+          onClick={onAction}
+          className={cn(
+            'w-full rounded-xl text-xs font-bold py-2 uppercase tracking-wide transition-all',
+            isCompleted
+              ? 'border-transparent text-gray-500 cursor-not-allowed bg-white/5'
+              : 'border-[#ccff00]/30 hover:bg-[#ccff00] hover:text-black text-[#ccff00]'
+          )}
+        >
+          {actionLabel}
+        </Button>
+      )}
     </div>
   );
 }

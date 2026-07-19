@@ -4,9 +4,18 @@
  */
 
 import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle, Polyline } from 'react-leaflet';
-import { STADIUM_CENTER, ZONES, GATES, VENDORS } from '../../data/stadium';
+import {
+  ZONES,
+  GATES,
+  VENDORS,
+  VENUES,
+  getCoordinateShift,
+  shiftLatLng,
+  shiftPolygon,
+} from '../../data/stadium';
 import { divIcon } from 'leaflet';
 import { useSimulationStore } from '../../store/simulation-store';
+import { useUserStore } from '../../store/user-store';
 import LegendOverlay from './LegendOverlay';
 
 // Helper to create themed icons
@@ -28,11 +37,15 @@ export default function StadiumMap({
   routeColor?: string;
 }) {
   const { zones } = useSimulationStore();
+  const { venueId } = useUserStore();
+  const shift = getCoordinateShift(venueId);
+  const activeVenue = VENUES[venueId] || VENUES['estadio-azteca'];
 
   return (
     <div className="w-full h-full relative group">
       <MapContainer
-        center={STADIUM_CENTER}
+        key={venueId}
+        center={activeVenue.center}
         zoom={17}
         scrollWheelZoom={false}
         className="w-full h-full"
@@ -52,7 +65,7 @@ export default function StadiumMap({
           return (
             <Polygon
               key={zone.id}
-              positions={zone.polygon}
+              positions={shiftPolygon(zone.polygon, shift)}
               pathOptions={{
                 fillColor: showHeatmap ? color : 'transparent',
                 fillOpacity: showHeatmap ? 0.6 : 0,
@@ -77,7 +90,7 @@ export default function StadiumMap({
         {GATES.map((gate) => (
           <Marker
             key={gate.id}
-            position={gate.location}
+            position={shiftLatLng(gate.location, shift)}
             icon={createIcon(gate.status === 'open' ? '#ccff00' : '#ef4444')}
           >
             <Popup>
@@ -93,7 +106,11 @@ export default function StadiumMap({
 
         {/* Vendors */}
         {VENDORS.map((vendor) => (
-          <Marker key={vendor.id} position={vendor.location} icon={createIcon('#3b82f6')}>
+          <Marker
+            key={vendor.id}
+            position={shiftLatLng(vendor.location, shift)}
+            icon={createIcon('#3b82f6')}
+          >
             <Popup>
               <div className="text-black p-2">
                 <div className="font-bold text-sm">{vendor.name}</div>
@@ -107,14 +124,14 @@ export default function StadiumMap({
 
         {/* User Current Location (Mocked) */}
         <Circle
-          center={[19.303, -99.151]}
+          center={shiftLatLng([19.303, -99.151], shift)}
           radius={5}
           pathOptions={{ fillColor: '#3b82f6', fillOpacity: 0.8, color: 'white', weight: 2 }}
         />
         {/* Active Route Path */}
         {routeCoordinates && routeCoordinates.length > 0 && (
           <Polyline
-            positions={routeCoordinates}
+            positions={routeCoordinates.map((c) => shiftLatLng(c, shift))}
             pathOptions={{
               color: routeColor || '#3b82f6',
               weight: 6,

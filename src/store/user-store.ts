@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { SustainabilityStats, Message } from '../types';
 
 interface UserStore {
+  venueId: string;
   ticket: {
     match: string;
     gate: string;
@@ -18,9 +19,12 @@ interface UserStore {
   chatHistory: Message[];
   addMessage: (msg: Message) => void;
   updateSustainability: (update: Partial<SustainabilityStats>) => void;
+  setVenue: (venueId: string) => void;
+  setTicket: (ticket: Partial<UserStore['ticket']>) => void;
 }
 
 export const useUserStore = create<UserStore>((set) => ({
+  venueId: 'estadio-azteca',
   ticket: {
     match: 'Mexico City vs Toronto',
     gate: 'Gate A',
@@ -48,4 +52,6 @@ export const useUserStore = create<UserStore>((set) => ({
     set((s) => ({
       sustainability: { ...s.sustainability, ...update },
     })),
+  setVenue: (venueId) => set({ venueId }),
+  setTicket: (ticket) => set((s) => ({ ticket: { ...s.ticket, ...ticket } })),
 }));
