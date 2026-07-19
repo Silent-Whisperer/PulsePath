@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useUserStore } from '../store/user-store';
 import { useAppStore } from '../store/app-store';
+import { useSimulationStore } from '../store/simulation-store';
 import { askPulse } from '../lib/ai/client';
 import { Send, User, BrainCircuit, Sparkles, ChevronRight } from 'lucide-react';
 
@@ -173,7 +174,29 @@ export default function FanAssistant() {
     setIsTyping(true);
 
     try {
-      const response = await askPulse(input, role, language);
+      const simStore = useSimulationStore.getState();
+      const context = {
+        gates: simStore.gates.map((g) => ({
+          name: g.name,
+          waitTime: g.currentQueueTime,
+          status: g.status,
+        })),
+        zones: simStore.zones.map((z) => ({
+          name: z.name,
+          density: z.currentDensity,
+          risk: z.riskLevel,
+        })),
+        incidents: simStore.incidents
+          .filter((i) => i.status !== 'resolved')
+          .map((i) => ({ title: i.title, description: i.description, severity: i.severity })),
+        transit: simStore.transit.map((t) => ({
+          name: t.name,
+          status: t.status,
+          frequency: t.frequency,
+        })),
+      };
+
+      const response = await askPulse(input, role, language, context);
       const aiMsg = {
         id: (Date.now() + 1).toString(),
         role: 'assistant' as const,

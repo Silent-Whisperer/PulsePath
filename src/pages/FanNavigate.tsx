@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { askPulse } from '../lib/ai/client';
 import StadiumMap from '../components/map/StadiumMap';
 import { useSearchParams } from 'react-router-dom';
+import { useSimulationStore } from '../store/simulation-store';
 import {
   Search,
   Navigation,
@@ -94,10 +95,33 @@ export default function FanNavigate() {
     });
 
     try {
+      const simStore = useSimulationStore.getState();
+      const context = {
+        gates: simStore.gates.map((g) => ({
+          name: g.name,
+          waitTime: g.currentQueueTime,
+          status: g.status,
+        })),
+        zones: simStore.zones.map((z) => ({
+          name: z.name,
+          density: z.currentDensity,
+          risk: z.riskLevel,
+        })),
+        incidents: simStore.incidents
+          .filter((i) => i.status !== 'resolved')
+          .map((i) => ({ title: i.title, description: i.description, severity: i.severity })),
+        transit: simStore.transit.map((t) => ({
+          name: t.name,
+          status: t.status,
+          frequency: t.frequency,
+        })),
+      };
+
       const response = await askPulse(
         `Plan a route to ${destination}. Tell me the duration, distance, and why this route is best based on current stadium congestion. Format as a short paragraph.`,
         'fan',
-        'en'
+        'en',
+        context
       );
 
       setActiveRoute({
@@ -107,7 +131,7 @@ export default function FanNavigate() {
         congestion: destination.includes('Gate C') ? 'Low' : 'High',
         reason: response,
       });
-    } catch (error) {
+    } catch {
       setActiveRoute({
         destination,
         duration: '8 mins',

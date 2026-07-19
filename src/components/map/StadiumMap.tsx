@@ -46,7 +46,7 @@ export default function StadiumMap({
       <MapContainer
         key={venueId}
         center={activeVenue.center}
-        zoom={17}
+        zoom={18}
         scrollWheelZoom={false}
         className="w-full h-full"
         zoomControl={false}

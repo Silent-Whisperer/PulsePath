@@ -12,6 +12,7 @@ export const aiRequestSchema = z.object({
     .max(1000, 'Prompt exceeds maximum length of 1000 characters'),
   role: z.enum(['fan', 'operations', 'volunteer', 'accessibility']).optional().default('fan'),
   language: z.enum(['en', 'es', 'fr', 'hi', 'ar']).optional().default('en'),
+  context: z.any().optional(),
 });
 
 export const aiResponseSchema = z.object({
