@@ -33,7 +33,7 @@ export default function OnboardingPage() {
         {/* Progress Dots */}
         <div className="flex justify-center gap-4 mb-12">
           {steps.map((s) => (
-            <div 
+            <div
               key={s.id}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 step >= s.id ? 'w-8 bg-[#ccff00]' : 'w-2 bg-white/10'
@@ -54,22 +54,22 @@ export default function OnboardingPage() {
               <h2 className="text-3xl font-bold mb-4">Who are you today?</h2>
               <p className="text-gray-400 mb-8">PULSEPATH adapts to your mission.</p>
               <div className="grid grid-cols-1 gap-4">
-                <Option 
-                  active={role === 'fan'} 
-                  onClick={() => setRole('fan')} 
-                  label="Match Day Fan" 
+                <Option
+                  active={role === 'fan'}
+                  onClick={() => setRole('fan')}
+                  label="Match Day Fan"
                   desc="I'm here to enjoy the game."
                 />
-                <Option 
-                  active={role === 'operations'} 
-                  onClick={() => setRole('operations')} 
-                  label="Venue Operations" 
+                <Option
+                  active={role === 'operations'}
+                  onClick={() => setRole('operations')}
+                  label="Venue Operations"
                   desc="I'm managing the stadium flow."
                 />
-                <Option 
-                  active={role === 'volunteer'} 
-                  onClick={() => setRole('volunteer')} 
-                  label="Official Volunteer" 
+                <Option
+                  active={role === 'volunteer'}
+                  onClick={() => setRole('volunteer')}
+                  label="Official Volunteer"
                   desc="I'm helping fans navigate safely."
                 />
               </div>
@@ -86,7 +86,9 @@ export default function OnboardingPage() {
                     key={l}
                     onClick={() => setLanguage(l as any)}
                     className={`p-4 rounded-2xl border transition-all ${
-                      language === l ? 'bg-[#ccff00] text-black border-[#ccff00]' : 'bg-white/5 border-white/10 text-white'
+                      language === l
+                        ? 'bg-[#ccff00] text-black border-[#ccff00]'
+                        : 'bg-white/5 border-white/10 text-white'
                     }`}
                   >
                     <span className="text-xl font-bold uppercase">{l}</span>
@@ -102,7 +104,10 @@ export default function OnboardingPage() {
               <p className="text-gray-400 mb-8">Tailor PULSEPATH to your specific needs.</p>
               <div className="space-y-4 text-left">
                 <Toggle label="Step-free navigation" desc="Avoid stairs and use elevators/ramps." />
-                <Toggle label="Low-sensory routing" desc="Avoid the loudest and most crowded corridors." />
+                <Toggle
+                  label="Low-sensory routing"
+                  desc="Avoid the loudest and most crowded corridors."
+                />
                 <Toggle label="High contrast mode" desc="Optimized for better visual clarity." />
               </div>
             </div>
@@ -113,7 +118,9 @@ export default function OnboardingPage() {
               <h2 className="text-3xl font-bold mb-4">Match Day Setup</h2>
               <p className="text-gray-400 mb-8">Confirming your fixture details.</p>
               <div className="bg-white/5 rounded-2xl p-6 mb-8 text-left border border-white/10">
-                <div className="text-xs text-[#ccff00] font-bold uppercase mb-2">Selected Match</div>
+                <div className="text-xs text-[#ccff00] font-bold uppercase mb-2">
+                  Selected Match
+                </div>
                 <div className="text-xl font-bold mb-4">Mexico City vs Toronto</div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -126,12 +133,14 @@ export default function OnboardingPage() {
                   </div>
                 </div>
               </div>
-              <p className="text-xs text-gray-500 italic">"PULSEPATH is now syncing with live stadium sensors..."</p>
+              <p className="text-xs text-gray-500 italic">
+                "PULSEPATH is now syncing with live stadium sensors..."
+              </p>
             </div>
           )}
 
           <div className="mt-12">
-            <Button 
+            <Button
               className="w-full bg-[#ccff00] text-black hover:bg-[#d9ff33] rounded-2xl py-6 text-lg font-bold"
               onClick={nextStep}
             >
@@ -154,7 +163,11 @@ function Option({ active, onClick, label, desc }: any) {
     >
       <div className="font-bold text-lg">{label}</div>
       <div className="text-sm text-gray-500">{desc}</div>
-      {active && <div className="absolute top-4 right-4 text-[#ccff00]"><Check className="w-5 h-5" /></div>}
+      {active && (
+        <div className="absolute top-4 right-4 text-[#ccff00]">
+          <Check className="w-5 h-5" />
+        </div>
+      )}
     </button>
   );
 }
@@ -162,7 +175,7 @@ function Option({ active, onClick, label, desc }: any) {
 function Toggle({ label, desc }: any) {
   const [enabled, setEnabled] = useState(false);
   return (
-    <button 
+    <button
       onClick={() => setEnabled(!enabled)}
       className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10"
     >
@@ -170,8 +183,12 @@ function Toggle({ label, desc }: any) {
         <div className="font-bold">{label}</div>
         <div className="text-xs text-gray-500">{desc}</div>
       </div>
-      <div className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? 'bg-[#ccff00]' : 'bg-gray-800'}`}>
-        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${enabled ? 'right-1' : 'left-1'}`} />
+      <div
+        className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? 'bg-[#ccff00]' : 'bg-gray-800'}`}
+      >
+        <div
+          className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${enabled ? 'right-1' : 'left-1'}`}
+        />
       </div>
     </button>
   );

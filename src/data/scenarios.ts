@@ -23,8 +23,8 @@ export const SCENARIOS: Scenario[] = [
       isPaused: false,
       weather: { temp: 24, condition: 'sunny', visibility: 100 },
       globalDensity: 0.4,
-      transitReliability: 0.95
-    }
+      transitReliability: 0.95,
+    },
   },
   {
     id: 'heavy-rain',
@@ -36,8 +36,8 @@ export const SCENARIOS: Scenario[] = [
       isPaused: false,
       weather: { temp: 18, condition: 'rainy', visibility: 40 },
       globalDensity: 0.5,
-      transitReliability: 0.6
-    }
+      transitReliability: 0.6,
+    },
   },
   {
     id: 'transit-delay',
@@ -49,8 +49,8 @@ export const SCENARIOS: Scenario[] = [
       isPaused: false,
       weather: { temp: 25, condition: 'sunny', visibility: 100 },
       globalDensity: 0.4,
-      transitReliability: 0.2
-    }
+      transitReliability: 0.2,
+    },
   },
   {
     id: 'gate-closure',
@@ -62,8 +62,8 @@ export const SCENARIOS: Scenario[] = [
       isPaused: false,
       weather: { temp: 24, condition: 'sunny', visibility: 100 },
       globalDensity: 0.6,
-      transitReliability: 0.9
-    }
+      transitReliability: 0.9,
+    },
   },
   {
     id: 'exit-surge',
@@ -75,7 +75,7 @@ export const SCENARIOS: Scenario[] = [
       isPaused: false,
       weather: { temp: 20, condition: 'sunny', visibility: 100 },
       globalDensity: 0.9,
-      transitReliability: 0.8
-    }
-  }
+      transitReliability: 0.8,
+    },
+  },
 ];

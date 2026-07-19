@@ -1,7 +1,6 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { useSimulationStore } from './simulation-store';
 
-
 describe('useSimulationStore state management', () => {
   beforeEach(() => {
     // Reset store to defaults before each test
@@ -21,7 +20,7 @@ describe('useSimulationStore state management', () => {
   test('setScenario should update active scenario state', () => {
     const { setScenario } = useSimulationStore.getState();
     setScenario('heavy-rain');
-    
+
     const { state } = useSimulationStore.getState();
     expect(state.scenario).toBe('heavy-rain');
     expect(state.globalDensity).toBe(0.5);
@@ -31,7 +30,7 @@ describe('useSimulationStore state management', () => {
   test('updateState should modify partial state correctly', () => {
     const { updateState } = useSimulationStore.getState();
     updateState({ globalDensity: 0.9, isPaused: true });
-    
+
     const { state } = useSimulationStore.getState();
     expect(state.globalDensity).toBe(0.9);
     expect(state.isPaused).toBe(true);
@@ -45,10 +44,10 @@ describe('useSimulationStore state management', () => {
       severity: 'high' as const,
       title: 'Test Heat Stroke',
       description: 'Fan needs assistance in Sector 110.',
-      location: [19.303, -99.150] as [number, number],
+      location: [19.303, -99.15] as [number, number],
       zoneId: 'west-vip',
       timestamp: new Date().toISOString(),
-      status: 'new' as const
+      status: 'new' as const,
     };
 
     addIncident(newInc);
@@ -61,9 +60,9 @@ describe('useSimulationStore state management', () => {
   test('resolveIncident should set status to resolved', () => {
     const { resolveIncident } = useSimulationStore.getState();
     resolveIncident('inc-1');
-    
+
     const { incidents } = useSimulationStore.getState();
-    const incident = incidents.find(i => i.id === 'inc-1');
+    const incident = incidents.find((i) => i.id === 'inc-1');
     expect(incident?.status).toBe('resolved');
   });
 
@@ -81,20 +80,20 @@ describe('useSimulationStore state management', () => {
   test('tick should not modify anything if simulation is paused', () => {
     const { tick, updateState } = useSimulationStore.getState();
     updateState({ isPaused: true });
-    
+
     const initialGates = JSON.stringify(useSimulationStore.getState().gates);
     tick();
-    
+
     const finalGates = JSON.stringify(useSimulationStore.getState().gates);
     expect(initialGates).toBe(finalGates);
   });
 
   test('resetStore should revert all modifications to defaults', () => {
     const { updateState, setScenario, resetStore } = useSimulationStore.getState();
-    
+
     setScenario('gate-closure');
     updateState({ globalDensity: 0.95 });
-    
+
     resetStore();
 
     const { state, incidents } = useSimulationStore.getState();

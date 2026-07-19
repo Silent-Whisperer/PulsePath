@@ -24,7 +24,7 @@ export default function LandingPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] bg-[#ccff00]/5 blur-[120px] rounded-full animate-pulse" />
         <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-blue-500/5 blur-[120px] rounded-full animate-pulse [animation-delay:2s]" />
-        
+
         {/* Animated Background Rings */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full animate-[spin_60s_linear_infinite]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] border border-white/5 rounded-full animate-[spin_90s_linear_infinite_reverse]" />
@@ -40,9 +40,17 @@ export default function LandingPage() {
           <span className="text-2xl font-bold tracking-tighter">PULSEPATH</span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-          <a href="#features" className="hover:text-white transition-colors">Features</a>
-          <a href="#impact" className="hover:text-white transition-colors">Impact</a>
-          <Button variant="outline" className="border-white/10 hover:bg-white/5" onClick={() => navigate('/simulation')}>
+          <a href="#features" className="hover:text-white transition-colors">
+            Features
+          </a>
+          <a href="#impact" className="hover:text-white transition-colors">
+            Impact
+          </a>
+          <Button
+            variant="outline"
+            className="border-white/10 hover:bg-white/5"
+            onClick={() => navigate('/simulation')}
+          >
             Enter Simulation
           </Button>
         </div>
@@ -63,18 +71,19 @@ export default function LandingPage() {
               PULSE<span className="text-[#ccff00]">PATH</span>
             </h1>
             <p className="text-lg lg:text-xl text-gray-400 max-w-lg leading-relaxed font-medium">
-              The intelligent nervous system for the world's greatest stage. Navigate, contribute, and experience the game like never before.
+              The intelligent nervous system for the world's greatest stage. Navigate, contribute,
+              and experience the game like never before.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-[#ccff00] text-black hover:bg-[#d9ff33] rounded-2xl px-12 py-8 text-xl font-black uppercase tracking-tighter shadow-[0_0_50px_rgba(204,255,0,0.3)] transition-all hover:scale-105"
                 onClick={() => handleRoleSelect('fan')}
               >
                 Enter Stadium <ArrowRight className="ml-2 w-6 h-6" />
               </Button>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="outline"
                 className="border-white/10 hover:bg-white/5 rounded-2xl px-12 py-8 text-xl font-bold text-white transition-all"
                 onClick={() => navigate('/simulation')}
@@ -82,19 +91,25 @@ export default function LandingPage() {
                 Sim Center
               </Button>
             </div>
-            
+
             <div className="mt-12 lg:mt-16 grid grid-cols-3 gap-4 lg:gap-8 border-t border-white/5 pt-8">
               <div>
                 <div className="text-2xl lg:text-3xl font-bold">23%</div>
-                <div className="text-[10px] lg:text-xs text-gray-500 uppercase tracking-wider mt-1">Faster Entry</div>
+                <div className="text-[10px] lg:text-xs text-gray-500 uppercase tracking-wider mt-1">
+                  Faster Entry
+                </div>
               </div>
               <div>
                 <div className="text-2xl lg:text-3xl font-bold">12m</div>
-                <div className="text-[10px] lg:text-xs text-gray-500 uppercase tracking-wider mt-1">Avg. Queue Save</div>
+                <div className="text-[10px] lg:text-xs text-gray-500 uppercase tracking-wider mt-1">
+                  Avg. Queue Save
+                </div>
               </div>
               <div>
                 <div className="text-2xl lg:text-3xl font-bold">100%</div>
-                <div className="text-[10px] lg:text-xs text-gray-500 uppercase tracking-wider mt-1">Step-Free Access</div>
+                <div className="text-[10px] lg:text-xs text-gray-500 uppercase tracking-wider mt-1">
+                  Step-Free Access
+                </div>
               </div>
             </div>
           </motion.div>
@@ -105,28 +120,28 @@ export default function LandingPage() {
             transition={{ duration: 1, delay: 0.2 }}
             className="grid grid-cols-1 sm:grid-cols-2 gap-4"
           >
-            <RoleCard 
-              title="Fan" 
-              desc="Match journey, AI nav & assistant" 
-              icon={Globe} 
+            <RoleCard
+              title="Fan"
+              desc="Match journey, AI nav & assistant"
+              icon={Globe}
               onClick={() => handleRoleSelect('fan')}
             />
-            <RoleCard 
-              title="Operations" 
-              desc="Pulse command, heatmaps & AI copilot" 
-              icon={Activity} 
+            <RoleCard
+              title="Operations"
+              desc="Pulse command, heatmaps & AI copilot"
+              icon={Activity}
               onClick={() => handleRoleSelect('operations')}
             />
-            <RoleCard 
-              title="Volunteer" 
-              desc="Task hub & multilingual assistance" 
-              icon={ShieldCheck} 
+            <RoleCard
+              title="Volunteer"
+              desc="Task hub & multilingual assistance"
+              icon={ShieldCheck}
               onClick={() => handleRoleSelect('volunteer')}
             />
-            <RoleCard 
-              title="Accessibility" 
-              desc="Inclusive navigation & support" 
-              icon={Accessibility} 
+            <RoleCard
+              title="Accessibility"
+              desc="Inclusive navigation & support"
+              icon={Accessibility}
               onClick={() => handleRoleSelect('accessibility')}
             />
           </motion.div>
@@ -134,22 +149,30 @@ export default function LandingPage() {
       </main>
 
       {/* Impact Link Fix */}
-      <section id="features" className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-32 border-t border-white/5">
+      <section
+        id="features"
+        className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-32 border-t border-white/5"
+      >
         <div className="flex justify-between items-end mb-16">
           <h2 className="text-4xl font-bold tracking-tighter">The Intelligence Layer</h2>
-          <button onClick={() => navigate('/fan/impact')} className="text-[#ccff00] text-sm font-bold uppercase tracking-widest hover:underline">View Impact Report</button>
+          <button
+            onClick={() => navigate('/fan/impact')}
+            className="text-[#ccff00] text-sm font-bold uppercase tracking-widest hover:underline"
+          >
+            View Impact Report
+          </button>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
-          <Feature 
-            title="Predictive Routing" 
+          <Feature
+            title="Predictive Routing"
             desc="AI analyzes crowd density to guide you through the least congested gates and concourses."
           />
-          <Feature 
-            title="Multilingual Copilot" 
+          <Feature
+            title="Multilingual Copilot"
             desc="Instant assistance in 5 languages for directions, food, and stadium operations."
           />
-          <Feature 
-            title="Sustainability Engine" 
+          <Feature
+            title="Sustainability Engine"
             desc="Real-time tracking of water station usage and carbon-efficient transit choices."
           />
         </div>
@@ -159,38 +182,112 @@ export default function LandingPage() {
       <footer className="border-t border-white/10 bg-black/50 backdrop-blur-xl py-20 mt-20 relative z-10">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12">
           <div className="space-y-6">
-            <div className="text-2xl font-black tracking-tighter">PULSE<span className="text-[#ccff00]">PATH</span></div>
+            <div className="text-2xl font-black tracking-tighter">
+              PULSE<span className="text-[#ccff00]">PATH</span>
+            </div>
             <p className="text-sm text-gray-500 leading-relaxed">
-              Pioneering the future of tournament operations and fan experience through real-time AI and crowd intelligence.
+              Pioneering the future of tournament operations and fan experience through real-time AI
+              and crowd intelligence.
             </p>
           </div>
           <div>
-            <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-gray-400">Experience</h4>
+            <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-gray-400">
+              Experience
+            </h4>
             <ul className="space-y-4 text-sm text-gray-500">
-              <li><button onClick={() => navigate('/fan')} className="hover:text-[#ccff00] transition-colors">Fan Dashboard</button></li>
-              <li><button onClick={() => navigate('/fan/navigate')} className="hover:text-[#ccff00] transition-colors">Smart Navigation</button></li>
-              <li><button onClick={() => navigate('/fan/impact')} className="hover:text-[#ccff00] transition-colors">Green Impact</button></li>
+              <li>
+                <button
+                  onClick={() => navigate('/fan')}
+                  className="hover:text-[#ccff00] transition-colors"
+                >
+                  Fan Dashboard
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/fan/navigate')}
+                  className="hover:text-[#ccff00] transition-colors"
+                >
+                  Smart Navigation
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/fan/impact')}
+                  className="hover:text-[#ccff00] transition-colors"
+                >
+                  Green Impact
+                </button>
+              </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-gray-400">Operations</h4>
+            <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-gray-400">
+              Operations
+            </h4>
             <ul className="space-y-4 text-sm text-gray-500">
-              <li><button onClick={() => navigate('/operations')} className="hover:text-[#ccff00] transition-colors">Control Command</button></li>
-              <li><button onClick={() => navigate('/operations/crowd')} className="hover:text-[#ccff00] transition-colors">Crowd Intelligence</button></li>
-              <li><button onClick={() => navigate('/operations/alerts')} className="hover:text-[#ccff00] transition-colors">Incident Manager</button></li>
+              <li>
+                <button
+                  onClick={() => navigate('/operations')}
+                  className="hover:text-[#ccff00] transition-colors"
+                >
+                  Control Command
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/operations/crowd')}
+                  className="hover:text-[#ccff00] transition-colors"
+                >
+                  Crowd Intelligence
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/operations/alerts')}
+                  className="hover:text-[#ccff00] transition-colors"
+                >
+                  Incident Manager
+                </button>
+              </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-gray-400">Support</h4>
+            <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-gray-400">
+              Support
+            </h4>
             <ul className="space-y-4 text-sm text-gray-500">
-              <li><button onClick={() => navigate('/accessibility')} className="hover:text-[#ccff00] transition-colors">Accessibility Mode</button></li>
-              <li><button onClick={() => navigate('/volunteer')} className="hover:text-[#ccff00] transition-colors">Volunteer Hub</button></li>
-              <li><button onClick={() => navigate('/simulation')} className="hover:text-[#ccff00] transition-colors">Sim Center</button></li>
+              <li>
+                <button
+                  onClick={() => navigate('/accessibility')}
+                  className="hover:text-[#ccff00] transition-colors"
+                >
+                  Accessibility Mode
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/volunteer')}
+                  className="hover:text-[#ccff00] transition-colors"
+                >
+                  Volunteer Hub
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/simulation')}
+                  className="hover:text-[#ccff00] transition-colors"
+                >
+                  Sim Center
+                </button>
+              </li>
             </ul>
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em]">© 2026 Global Football Federation • PulsePath AI System</div>
+          <div className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em]">
+            © 2026 Global Football Federation • PulsePath AI System
+          </div>
           <div className="flex gap-8 text-[10px] font-bold text-gray-600 uppercase tracking-widest">
             <span className="hover:text-white cursor-pointer transition-colors">Privacy</span>
             <span className="hover:text-white cursor-pointer transition-colors">Security</span>

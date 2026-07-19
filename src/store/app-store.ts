@@ -32,6 +32,7 @@ export const useAppStore = create<AppState>((set) => ({
   setLanguage: (language) => set({ language }),
   toggleHighContrast: () => set((state) => ({ isHighContrast: !state.isHighContrast })),
   toggleReducedMotion: () => set((state) => ({ isReducedMotion: !state.isReducedMotion })),
-  toggleQuietRoutePreferred: () => set((state) => ({ isQuietRoutePreferred: !state.isQuietRoutePreferred })),
+  toggleQuietRoutePreferred: () =>
+    set((state) => ({ isQuietRoutePreferred: !state.isQuietRoutePreferred })),
   setFontSize: (fontSize) => set({ fontSize }),
 }));

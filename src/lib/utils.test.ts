@@ -7,7 +7,7 @@ describe('cn utility function', () => {
   });
 
   test('should handle conditional classes', () => {
-    expect(cn('bg-red-500', true && 'text-white', false && 'hidden')).toBe('bg-red-500 text-white');
+    expect(cn('bg-red-500', { 'text-white': true, hidden: false })).toBe('bg-red-500 text-white');
   });
 
   test('should resolve tailwind conflicts in favor of the last class', () => {
@@ -16,6 +16,8 @@ describe('cn utility function', () => {
   });
 
   test('should handle arrays and object styles', () => {
-    expect(cn(['bg-red-500', 'text-white'], { hidden: true, block: false })).toBe('bg-red-500 text-white hidden');
+    expect(cn(['bg-red-500', 'text-white'], { hidden: true, block: false })).toBe(
+      'bg-red-500 text-white hidden'
+    );
   });
 });

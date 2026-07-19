@@ -28,23 +28,25 @@ const getDefaultIncidents = (): Incident[] => [
     type: 'crowd',
     severity: 'critical',
     title: 'Gate B Crowd Surge',
-    description: 'Unexpected high density detected at Gate B. Transit shuttle synchronization failure suspected.',
+    description:
+      'Unexpected high density detected at Gate B. Transit shuttle synchronization failure suspected.',
     location: [19.3029, -99.1485],
     zoneId: 'East Upper Deck',
     timestamp: new Date().toISOString(),
-    status: 'new'
+    status: 'new',
   },
   {
     id: 'inc-2',
     type: 'accessibility',
     severity: 'medium',
     title: 'Elevator Outage: North Concourse',
-    description: 'Elevator EL-04 is currently out of service for maintenance. Rerouting accessibility users to EL-05.',
+    description:
+      'Elevator EL-04 is currently out of service for maintenance. Rerouting accessibility users to EL-05.',
     location: [19.3045, -99.1505],
     zoneId: 'North Lower Concourse',
     timestamp: new Date().toISOString(),
-    status: 'acknowledged'
-  }
+    status: 'acknowledged',
+  },
 ];
 
 export const useSimulationStore = create<SimulationStore>((set) => ({
@@ -54,34 +56,41 @@ export const useSimulationStore = create<SimulationStore>((set) => ({
   zones: ZONES,
   transit: TRANSIT_ROUTES,
   setScenario: (scenarioId) => {
-    const scenario = SCENARIOS.find(s => s.id === scenarioId) || SCENARIOS[0];
+    const scenario = SCENARIOS.find((s) => s.id === scenarioId) || SCENARIOS[0];
     set({ state: scenario.initialState });
     // Logic to update gates/zones based on scenario could be added here
   },
   updateState: (update) => set((s) => ({ state: { ...s.state, ...update } })),
   addIncident: (incident) => set((s) => ({ incidents: [incident, ...s.incidents] })),
-  resolveIncident: (id) => set((s) => ({
-    incidents: s.incidents.map(i => i.id === id ? { ...i, status: 'resolved' } : i)
-  })),
-  tick: () => set((s) => {
-    if (s.state.isPaused) return s;
-    // Simulate minor fluctuations
-    return {
-      gates: s.gates.map(g => ({
-        ...g,
-        currentQueueTime: Math.round(Math.max(2, g.currentQueueTime + (Math.random() > 0.5 ? 1 : -1) * (s.state.globalDensity)))
-      })),
-      zones: s.zones.map(z => ({
-        ...z,
-        currentDensity: parseFloat(Math.min(1, Math.max(0.1, z.currentDensity + (Math.random() - 0.5) * 0.05)).toFixed(2))
-      }))
-    };
-  }),
-  resetStore: () => set({
-    state: SCENARIOS[0].initialState,
-    incidents: getDefaultIncidents(),
-    gates: GATES,
-    zones: ZONES,
-    transit: TRANSIT_ROUTES,
-  }),
+  resolveIncident: (id) =>
+    set((s) => ({
+      incidents: s.incidents.map((i) => (i.id === id ? { ...i, status: 'resolved' } : i)),
+    })),
+  tick: () =>
+    set((s) => {
+      if (s.state.isPaused) return s;
+      // Simulate minor fluctuations
+      return {
+        gates: s.gates.map((g) => ({
+          ...g,
+          currentQueueTime: Math.round(
+            Math.max(2, g.currentQueueTime + (Math.random() > 0.5 ? 1 : -1) * s.state.globalDensity)
+          ),
+        })),
+        zones: s.zones.map((z) => ({
+          ...z,
+          currentDensity: parseFloat(
+            Math.min(1, Math.max(0.1, z.currentDensity + (Math.random() - 0.5) * 0.05)).toFixed(2)
+          ),
+        })),
+      };
+    }),
+  resetStore: () =>
+    set({
+      state: SCENARIOS[0].initialState,
+      incidents: getDefaultIncidents(),
+      gates: GATES,
+      zones: ZONES,
+      transit: TRANSIT_ROUTES,
+    }),
 }));

@@ -26,24 +26,26 @@ export const useUserStore = create<UserStore>((set) => ({
     gate: 'Gate A',
     section: '114',
     row: 'J',
-    seat: '12'
+    seat: '12',
   },
   sustainability: {
     bottlesSaved: 2,
     carbonSaved: 1.4,
     stepsTaken: 4500,
-    points: 120
+    points: 120,
   },
   chatHistory: [
     {
       id: '1',
       role: 'assistant',
-      content: 'Welcome to PULSEPATH. I am your match-day assistant. How can I help you navigate the stadium today?',
-      timestamp: new Date().toISOString()
-    }
+      content:
+        'Welcome to PULSEPATH. I am your match-day assistant. How can I help you navigate the stadium today?',
+      timestamp: new Date().toISOString(),
+    },
   ],
   addMessage: (msg) => set((s) => ({ chatHistory: [...s.chatHistory, msg] })),
-  updateSustainability: (update) => set((s) => ({
-    sustainability: { ...s.sustainability, ...update }
-  })),
+  updateSustainability: (update) =>
+    set((s) => ({
+      sustainability: { ...s.sustainability, ...update },
+    })),
 }));

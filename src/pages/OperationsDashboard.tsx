@@ -3,24 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import StadiumMap from '../components/map/StadiumMap';
 import { useSimulationStore } from '../store/simulation-store';
-import { 
-  Users, 
-  ShieldAlert, 
-  ChevronRight, 
-  BrainCircuit, 
-  TrendingUp
-} from 'lucide-react';
+import { Users, ShieldAlert, ChevronRight, BrainCircuit, TrendingUp } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { 
-  AreaChart, 
-  Area, 
-  ResponsiveContainer 
-} from 'recharts';
+import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 
 const flowData = [
   { time: '14:00', inflow: 120, risk: 20 },
@@ -34,7 +23,7 @@ export default function OperationsDashboard() {
   const { state, incidents } = useSimulationStore();
   const navigate = useNavigate();
 
-  const activeAlerts = incidents.filter(i => i.status !== 'resolved');
+  const activeAlerts = incidents.filter((i) => i.status !== 'resolved');
 
   return (
     <div className="grid lg:grid-cols-[1fr_400px] gap-8 min-h-full">
@@ -42,15 +31,20 @@ export default function OperationsDashboard() {
       <div className="flex flex-col gap-6 h-[500px] lg:h-[calc(100vh-12rem)]">
         <div className="flex-1 bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden relative shadow-2xl">
           <StadiumMap showHeatmap />
-          
+
           {/* Map Overlay Stats */}
           <div className="absolute top-4 left-4 lg:top-6 lg:left-6 z-[1000] flex flex-wrap gap-2 lg:gap-4">
             <MapStat label="Occupancy" value="64,231" icon={Users} />
-            <MapStat label="Risk Level" value={state.globalDensity > 0.8 ? 'CRITICAL' : 'STABLE'} icon={ShieldAlert} alert={state.globalDensity > 0.8} />
+            <MapStat
+              label="Risk Level"
+              value={state.globalDensity > 0.8 ? 'CRITICAL' : 'STABLE'}
+              icon={ShieldAlert}
+              alert={state.globalDensity > 0.8}
+            />
           </div>
 
           <div className="absolute bottom-4 left-4 lg:bottom-6 lg:left-6 z-[1000]">
-            <Button 
+            <Button
               className="bg-[#ccff00] text-black hover:bg-[#d9ff33] rounded-2xl py-4 lg:py-6 px-6 lg:px-8 font-black uppercase tracking-tighter text-xs lg:text-base shadow-2xl"
               onClick={() => navigate('/operations/crowd')}
             >
@@ -62,7 +56,9 @@ export default function OperationsDashboard() {
         {/* Real-time Throughput Chart */}
         <div className="h-40 lg:h-48 bg-white/5 border border-white/10 rounded-[2rem] p-6 shrink-0">
           <div className="flex justify-between items-center mb-4">
-            <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">Entry Throughput (People/min)</div>
+            <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+              Entry Throughput (People/min)
+            </div>
             <div className="flex items-center gap-2 text-[#ccff00] text-xs font-bold">
               <TrendingUp className="w-3 h-3" /> +12% vs last match
             </div>
@@ -72,11 +68,18 @@ export default function OperationsDashboard() {
               <AreaChart data={flowData}>
                 <defs>
                   <linearGradient id="colorInflow" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ccff00" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#ccff00" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#ccff00" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#ccff00" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <Area type="monotone" dataKey="inflow" stroke="#ccff00" fillOpacity={1} fill="url(#colorInflow)" strokeWidth={3} />
+                <Area
+                  type="monotone"
+                  dataKey="inflow"
+                  stroke="#ccff00"
+                  fillOpacity={1}
+                  fill="url(#colorInflow)"
+                  strokeWidth={3}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -93,15 +96,18 @@ export default function OperationsDashboard() {
             </div>
             <div>
               <h3 className="text-lg font-black uppercase tracking-tight">Pulse Copilot</h3>
-              <div className="text-[10px] font-bold opacity-60">System Analyzing Live Signals...</div>
+              <div className="text-[10px] font-bold opacity-60">
+                System Analyzing Live Signals...
+              </div>
             </div>
           </div>
 
           <div className="space-y-6">
             <p className="text-sm font-medium leading-relaxed">
-              "Zone 4 is trending toward critical density within 12 minutes due to a delayed shuttle arrival and gate imbalance. Recommend redirecting 15% of arrivals to Gate D."
+              "Zone 4 is trending toward critical density within 12 minutes due to a delayed shuttle
+              arrival and gate imbalance. Recommend redirecting 15% of arrivals to Gate D."
             </p>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-black/5 rounded-2xl p-4">
                 <div className="text-[10px] font-bold uppercase opacity-60">Confidence</div>
@@ -114,8 +120,15 @@ export default function OperationsDashboard() {
             </div>
 
             <div className="flex gap-3">
-              <Button className="flex-1 bg-black text-white hover:bg-black/80 rounded-xl font-bold py-6">Approve Action</Button>
-              <Button variant="outline" className="border-black/20 hover:bg-black/5 text-black rounded-xl font-bold px-6">Dismiss</Button>
+              <Button className="flex-1 bg-black text-white hover:bg-black/80 rounded-xl font-bold py-6">
+                Approve Action
+              </Button>
+              <Button
+                variant="outline"
+                className="border-black/20 hover:bg-black/5 text-black rounded-xl font-bold px-6"
+              >
+                Dismiss
+              </Button>
             </div>
           </div>
         </div>
@@ -130,9 +143,9 @@ export default function OperationsDashboard() {
           </div>
 
           <div className="space-y-4 flex-1 overflow-y-auto">
-            {activeAlerts.length > 0 ? activeAlerts.map(alert => (
-              <AlertCard key={alert.id} alert={alert} />
-            )) : (
+            {activeAlerts.length > 0 ? (
+              activeAlerts.map((alert) => <AlertCard key={alert.id} alert={alert} />)
+            ) : (
               <div className="flex flex-col items-center justify-center h-48 text-gray-600">
                 <ShieldAlert className="w-12 h-12 mb-4 opacity-20" />
                 <p className="text-sm">No critical incidents detected.</p>
@@ -140,8 +153,8 @@ export default function OperationsDashboard() {
             )}
           </div>
 
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full mt-6 border-white/10 rounded-xl py-6"
             onClick={() => navigate('/operations/alerts')}
           >
@@ -155,11 +168,13 @@ export default function OperationsDashboard() {
 
 function MapStat({ label, value, icon: Icon, alert }: any) {
   return (
-    <div className={cn(
-      "px-4 py-3 bg-[#0a0a0b]/90 backdrop-blur-xl border rounded-2xl flex items-center gap-3 shadow-2xl",
-      alert ? "border-red-500/50 text-red-500" : "border-white/10 text-white"
-    )}>
-      <Icon className={cn("w-4 h-4", alert ? "animate-pulse" : "text-[#ccff00]")} />
+    <div
+      className={cn(
+        'px-4 py-3 bg-[#0a0a0b]/90 backdrop-blur-xl border rounded-2xl flex items-center gap-3 shadow-2xl',
+        alert ? 'border-red-500/50 text-red-500' : 'border-white/10 text-white'
+      )}
+    >
+      <Icon className={cn('w-4 h-4', alert ? 'animate-pulse' : 'text-[#ccff00]')} />
       <div>
         <div className="text-[8px] font-bold uppercase opacity-50">{label}</div>
         <div className="text-sm font-black">{value}</div>
@@ -172,12 +187,16 @@ function AlertCard({ alert }: any) {
   return (
     <div className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-red-500/30 transition-all cursor-pointer group">
       <div className="flex justify-between items-start mb-2">
-        <h4 className="font-bold text-sm group-hover:text-red-400 transition-colors">{alert.title}</h4>
+        <h4 className="font-bold text-sm group-hover:text-red-400 transition-colors">
+          {alert.title}
+        </h4>
         <span className="text-[10px] font-black uppercase text-red-500">{alert.severity}</span>
       </div>
       <p className="text-xs text-gray-500 mb-3 leading-snug">{alert.description}</p>
       <div className="flex justify-between items-center">
-        <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">{alert.timestamp.split('T')[1].slice(0, 5)}</span>
+        <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">
+          {alert.timestamp.split('T')[1].slice(0, 5)}
+        </span>
         <div className="flex gap-1">
           <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
           <div className="text-[10px] font-black uppercase text-gray-400">Live</div>

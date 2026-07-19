@@ -24,7 +24,12 @@ describe('askPulse client utility', () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ prompt: 'gate info', role: 'fan', language: 'en', context: undefined }),
+      body: JSON.stringify({
+        prompt: 'gate info',
+        role: 'fan',
+        language: 'en',
+        context: undefined,
+      }),
     });
     expect(result).toBe('Mocked server reply');
   });

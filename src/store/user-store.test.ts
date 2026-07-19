@@ -9,9 +9,9 @@ describe('useUserStore state management', () => {
         bottlesSaved: 2,
         carbonSaved: 1.4,
         stepsTaken: 4500,
-        points: 120
+        points: 120,
       },
-      chatHistory: []
+      chatHistory: [],
     });
   });
 
@@ -23,10 +23,10 @@ describe('useUserStore state management', () => {
 
   test('updateSustainability updates sustainability parameters correctly', () => {
     const { updateSustainability } = useUserStore.getState();
-    
+
     updateSustainability({
       points: 150,
-      bottlesSaved: 3
+      bottlesSaved: 3,
     });
 
     const state = useUserStore.getState();
@@ -41,7 +41,7 @@ describe('useUserStore state management', () => {
       id: 'test-msg-1',
       role: 'user' as const,
       content: 'Where is Section 114?',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     addMessage(msg);

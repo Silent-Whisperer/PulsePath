@@ -15,8 +15,11 @@ export const ZONES: StadiumZone[] = [
     currentDensity: 0.45,
     riskLevel: 'low',
     polygon: [
-      [19.304, -99.151], [19.304, -99.150], [19.303, -99.150], [19.303, -99.151]
-    ]
+      [19.304, -99.151],
+      [19.304, -99.15],
+      [19.303, -99.15],
+      [19.303, -99.151],
+    ],
   },
   {
     id: 'east-upper',
@@ -25,18 +28,24 @@ export const ZONES: StadiumZone[] = [
     currentDensity: 0.82,
     riskLevel: 'high',
     polygon: [
-      [19.303, -99.149], [19.302, -99.149], [19.302, -99.150], [19.303, -99.150]
-    ]
+      [19.303, -99.149],
+      [19.302, -99.149],
+      [19.302, -99.15],
+      [19.303, -99.15],
+    ],
   },
   {
     id: 'west-vip',
     name: 'West VIP Lounge',
     capacity: 5000,
-    currentDensity: 0.30,
+    currentDensity: 0.3,
     riskLevel: 'low',
     polygon: [
-      [19.303, -99.152], [19.302, -99.152], [19.302, -99.151], [19.303, -99.151]
-    ]
+      [19.303, -99.152],
+      [19.302, -99.152],
+      [19.302, -99.151],
+      [19.303, -99.151],
+    ],
   },
   {
     id: 'south-fan-zone',
@@ -45,9 +54,12 @@ export const ZONES: StadiumZone[] = [
     currentDensity: 0.65,
     riskLevel: 'medium',
     polygon: [
-      [19.302, -99.151], [19.302, -99.150], [19.301, -99.150], [19.301, -99.151]
-    ]
-  }
+      [19.302, -99.151],
+      [19.302, -99.15],
+      [19.301, -99.15],
+      [19.301, -99.151],
+    ],
+  },
 ];
 
 export const GATES: Gate[] = [
@@ -58,7 +70,7 @@ export const GATES: Gate[] = [
     throughput: 120,
     currentQueueTime: 12,
     location: [19.3045, -99.1505],
-    accessibilityFeatures: ['ramps', 'elevators', 'braille-signs']
+    accessibilityFeatures: ['ramps', 'elevators', 'braille-signs'],
   },
   {
     id: 'gate-b',
@@ -67,7 +79,7 @@ export const GATES: Gate[] = [
     throughput: 45,
     currentQueueTime: 35,
     location: [19.3029, -99.1485],
-    accessibilityFeatures: ['ramps']
+    accessibilityFeatures: ['ramps'],
   },
   {
     id: 'gate-c',
@@ -76,7 +88,7 @@ export const GATES: Gate[] = [
     throughput: 210,
     currentQueueTime: 5,
     location: [19.3013, -99.1505],
-    accessibilityFeatures: ['elevators', 'hearing-loops']
+    accessibilityFeatures: ['elevators', 'hearing-loops'],
   },
   {
     id: 'gate-d',
@@ -85,8 +97,8 @@ export const GATES: Gate[] = [
     throughput: 150,
     currentQueueTime: 10,
     location: [19.3029, -99.1525],
-    accessibilityFeatures: ['ramps', 'elevators']
-  }
+    accessibilityFeatures: ['ramps', 'elevators'],
+  },
 ];
 
 export const VENDORS: Vendor[] = [
@@ -98,7 +110,7 @@ export const VENDORS: Vendor[] = [
     queueTime: 15,
     specialties: ['Tacos', 'Sodas'],
     isSustainable: true,
-    isAccessible: true
+    isAccessible: true,
   },
   {
     id: 'burger-stadium',
@@ -108,7 +120,7 @@ export const VENDORS: Vendor[] = [
     queueTime: 8,
     specialties: ['Burgers', 'Fries'],
     isSustainable: false,
-    isAccessible: true
+    isAccessible: true,
   },
   {
     id: 'merch-north',
@@ -118,8 +130,8 @@ export const VENDORS: Vendor[] = [
     queueTime: 20,
     specialties: ['Jerseys', 'Scarves'],
     isSustainable: true,
-    isAccessible: true
-  }
+    isAccessible: true,
+  },
 ];
 
 export const TRANSIT_ROUTES: TransitRoute[] = [
@@ -133,8 +145,8 @@ export const TRANSIT_ROUTES: TransitRoute[] = [
     loadFactor: 0.85,
     stations: [
       { name: 'Downtown', location: [19.4326, -99.1332] },
-      { name: 'Stadium Central', location: [19.3029, -99.1555] }
-    ]
+      { name: 'Stadium Central', location: [19.3029, -99.1555] },
+    ],
   },
   {
     id: 'shuttle-fan-park',
@@ -143,10 +155,10 @@ export const TRANSIT_ROUTES: TransitRoute[] = [
     status: 'delayed',
     frequency: 10,
     nextArrival: '2026-07-06T14:45:00Z',
-    loadFactor: 0.40,
+    loadFactor: 0.4,
     stations: [
-      { name: 'Fan Park North', location: [19.3200, -99.1500] },
-      { name: 'Stadium East Gate', location: [19.3029, -99.1480] }
-    ]
-  }
+      { name: 'Fan Park North', location: [19.32, -99.15] },
+      { name: 'Stadium East Gate', location: [19.3029, -99.148] },
+    ],
+  },
 ];

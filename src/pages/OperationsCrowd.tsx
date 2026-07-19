@@ -3,17 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { useSimulationStore } from '../store/simulation-store';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  Tooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  Tooltip,
   ResponsiveContainer,
   Cell,
   LineChart,
-  Line
+  Line,
 } from 'recharts';
 import { Users, TrendingUp, Zap } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -28,16 +27,16 @@ const predictionData = [
 export default function OperationsCrowd() {
   const { zones, gates } = useSimulationStore();
 
-  const zoneData = zones.map(z => ({
+  const zoneData = zones.map((z) => ({
     name: z.name.split(' ')[0],
     density: Math.round(z.currentDensity * 100),
-    risk: z.riskLevel
+    risk: z.riskLevel,
   }));
 
-  const gateData = gates.map(g => ({
+  const gateData = gates.map((g) => ({
     name: g.name.split(' ')[1],
     throughput: g.throughput,
-    queue: g.currentQueueTime
+    queue: g.currentQueueTime,
   }));
 
   return (
@@ -50,11 +49,15 @@ export default function OperationsCrowd() {
         <div className="flex gap-4">
           <div className="flex-1 md:flex-none px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-center min-w-[120px]">
             <div className="text-[10px] text-gray-500 uppercase font-bold mb-1">Inflow Rate</div>
-            <div className="text-xl font-bold">1,240 <span className="text-xs text-gray-600">/min</span></div>
+            <div className="text-xl font-bold">
+              1,240 <span className="text-xs text-gray-600">/min</span>
+            </div>
           </div>
           <div className="flex-1 md:flex-none px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-center min-w-[120px]">
             <div className="text-[10px] text-gray-500 uppercase font-bold mb-1">Egress Rate</div>
-            <div className="text-xl font-bold">12 <span className="text-xs text-gray-600">/min</span></div>
+            <div className="text-xl font-bold">
+              12 <span className="text-xs text-gray-600">/min</span>
+            </div>
           </div>
         </div>
       </div>
@@ -69,14 +72,28 @@ export default function OperationsCrowd() {
           <div className="h-[250px] lg:h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={zoneData}>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#666', fontSize: 10 }} />
-                <Tooltip 
-                   cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                   contentStyle={{ backgroundColor: '#0a0a0b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem' }}
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#666', fontSize: 10 }}
+                />
+                <Tooltip
+                  cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                  contentStyle={{
+                    backgroundColor: '#0a0a0b',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '1rem',
+                  }}
                 />
                 <Bar dataKey="density" radius={[6, 6, 0, 0]}>
                   {zoneData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.density > 80 ? '#ef4444' : entry.density > 60 ? '#f59e0b' : '#ccff00'} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={
+                        entry.density > 80 ? '#ef4444' : entry.density > 60 ? '#f59e0b' : '#ccff00'
+                      }
+                    />
                   ))}
                 </Bar>
               </BarChart>
@@ -95,12 +112,34 @@ export default function OperationsCrowd() {
           <div className="h-[250px] lg:h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={predictionData}>
-                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: '#666', fontSize: 10 }} />
-                <Tooltip 
-                   contentStyle={{ backgroundColor: '#0a0a0b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem' }}
+                <XAxis
+                  dataKey="time"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#666', fontSize: 10 }}
                 />
-                <Line type="monotone" dataKey="predicted" stroke="#ccff00" strokeWidth={3} dot={{ fill: '#ccff00', r: 4 }} strokeDasharray="5 5" />
-                <Line type="monotone" dataKey="density" stroke="#ccff00" strokeWidth={3} dot={{ fill: '#ccff00', r: 6 }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0a0a0b',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '1rem',
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="predicted"
+                  stroke="#ccff00"
+                  strokeWidth={3}
+                  dot={{ fill: '#ccff00', r: 4 }}
+                  strokeDasharray="5 5"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="density"
+                  stroke="#ccff00"
+                  strokeWidth={3}
+                  dot={{ fill: '#ccff00', r: 6 }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -116,14 +155,20 @@ export default function OperationsCrowd() {
               <div key={gate.name} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="font-bold text-gray-400">Gate {gate.name}</span>
-                  <span className="font-bold">{Math.round(gate.queue)}m queue • {Math.round(gate.throughput)}p/m</span>
+                  <span className="font-bold">
+                    {Math.round(gate.queue)}m queue • {Math.round(gate.throughput)}p/m
+                  </span>
                 </div>
                 <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className={cn(
-                      "h-full transition-all duration-1000",
-                      gate.queue > 20 ? "bg-red-500" : gate.queue > 10 ? "bg-amber-500" : "bg-[#ccff00]"
-                    )} 
+                      'h-full transition-all duration-1000',
+                      gate.queue > 20
+                        ? 'bg-red-500'
+                        : gate.queue > 10
+                          ? 'bg-amber-500'
+                          : 'bg-[#ccff00]'
+                    )}
                     style={{ width: `${Math.min(100, (gate.queue / 40) * 100)}%` }}
                   />
                 </div>
@@ -141,19 +186,19 @@ export default function OperationsCrowd() {
             <h3 className="text-xl font-bold">Suggested Interventions</h3>
           </div>
           <div className="space-y-4">
-            <Intervention 
-              title="Reroute North Arrivals" 
-              desc="Divert 15% of inbound fans from Gate A to Gate C." 
+            <Intervention
+              title="Reroute North Arrivals"
+              desc="Divert 15% of inbound fans from Gate A to Gate C."
               impact="-8m wait"
             />
-            <Intervention 
-              title="Staff Deployment" 
-              desc="Deploy 4 volunteers to East Concourse for flow assist." 
+            <Intervention
+              title="Staff Deployment"
+              desc="Deploy 4 volunteers to East Concourse for flow assist."
               impact="Smooth flow"
             />
-            <Intervention 
-              title="Digital Signage Update" 
-              desc="Update LED boards to show 12min savings at West Gate." 
+            <Intervention
+              title="Digital Signage Update"
+              desc="Update LED boards to show 12min savings at West Gate."
               impact="-15% density"
             />
           </div>

@@ -45,7 +45,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
-        
+
         <Route element={<AppShell />}>
           {/* Fan Routes */}
           <Route path="/fan" element={<FanDashboard />} />
@@ -75,4 +75,3 @@ export default function App() {
     </Router>
   );
 }
-
